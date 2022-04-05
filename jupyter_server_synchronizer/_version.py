@@ -1,4 +1,3 @@
-
 """
 store the current version info of the synchronizer.
 """

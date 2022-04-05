@@ -5,9 +5,7 @@ from typing import Union
 import pytest
 
 from jupyter_server_synchronizer.kernel_db import KernelTable
-from jupyter_server_synchronizer.kernel_records import (
-    KernelRecord,
-)
+from jupyter_server_synchronizer.kernel_records import KernelRecord
 
 
 def test_database_is_created(jp_environ, jp_runtime_dir):

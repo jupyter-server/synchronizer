@@ -1,8 +1,4 @@
-from jupyter_server_synchronizer.extension import (
-    SynchronizerExtension,
-)
-
-from ._version import __version__, version_info
+from jupyter_server_synchronizer.extension import SynchronizerExtension
 
 
 def _jupyter_server_extension_points():  # pragma: no cover

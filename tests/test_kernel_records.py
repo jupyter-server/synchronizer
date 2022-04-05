@@ -5,11 +5,7 @@ import pytest
 
 from jupyter_server_synchronizer.kernel_records import (
     KernelRecord,
-)
-from jupyter_server_synchronizer.kernel_records import (
     KernelRecordConflict,
-)
-from jupyter_server_synchronizer.kernel_records import (
     KernelRecordList,
 )
 
@@ -22,7 +18,7 @@ def test_kernel_record():
     assert record1.get_identifier_values() == ["kernel1"]
 
 
-def test_kernel_record():
+def test_kernel_record_equals():
     record0 = KernelRecord(kernel_id="kernel1")
     record1 = KernelRecord(kernel_id="kernel2")
     record2 = KernelRecord(kernel_id="kernel1", alive=True)
