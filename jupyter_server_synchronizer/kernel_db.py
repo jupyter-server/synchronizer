@@ -2,18 +2,14 @@ import pathlib
 import sqlite3
 from typing import List
 
-from traitlets import TraitError
-from traitlets import Type
-from traitlets import Unicode
-from traitlets import validate
+from traitlets import TraitError, Type, Unicode, validate
 from traitlets.config.configurable import Configurable
 
 from .kernel_records import KernelRecord
 
 
 class KernelTable(Configurable):
-    """An SQLite database for recorded kernels in the current server.
-    """
+    """An SQLite database for recorded kernels in the current server."""
 
     _table_name = "kerneltable"
     _connection = None
@@ -66,9 +62,7 @@ class KernelTable(Configurable):
     def connection(self):
         """Start a database connection"""
         if self._connection is None:
-            self._connection = sqlite3.connect(
-                self.database_filepath, isolation_level=None
-            )
+            self._connection = sqlite3.connect(self.database_filepath, isolation_level=None)
             self._connection.row_factory = sqlite3.Row
         return self._connection
 
@@ -86,9 +80,7 @@ class KernelTable(Configurable):
             self.cursor.execute(query, tuple(identifiers.values()))
         else:
             err_message = "A valid identifying field for a Kernel Record was not given."
-            identifiers = [
-                field for field in self.kernel_record_type if field.endswith("_id")
-            ]
+            identifiers = [field for field in self.kernel_record_type if field.endswith("_id")]
             if identifiers:
                 err_message += f" Examples include: {identifiers}"
             raise Exception(err_message)
@@ -101,9 +93,7 @@ class KernelTable(Configurable):
             values = str(values)
         else:
             values = f"('{values[0]}')"
-        self.cursor.execute(
-            f"INSERT INTO {self._table_name} ({columns}) VALUES {values}"
-        )
+        self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")
 
     def exists(self, **identifier) -> bool:
         """Check to see if the session of a given name exists"""
@@ -144,10 +134,7 @@ class KernelTable(Configurable):
         self.query("DELETE FROM {table} WHERE {0}=?", **identifier)
 
     def row_to_model(self, row: sqlite3.Row) -> KernelRecord:
-        items = {
-            field: row[field]
-            for field in self.kernel_record_class.get_identifier_fields()
-        }
+        items = {field: row[field] for field in self.kernel_record_class.get_identifier_fields()}
         return self.kernel_record_class(**items)
 
     def list(self) -> List[KernelRecord]:

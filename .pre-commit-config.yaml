@@ -22,7 +22,7 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-        args: ["--line-length", "100"]
+        args: ['--line-length', '100']
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
@@ -54,9 +54,9 @@ repos:
       - id: flake8
         additional_dependencies:
           [
-            "flake8-bugbear==20.1.4",
-            "flake8-logging-format==0.6.0",
-            "flake8-implicit-str-concat==0.2.0",
+            'flake8-bugbear==20.1.4',
+            'flake8-logging-format==0.6.0',
+            'flake8-implicit-str-concat==0.2.0'
           ]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
@@ -68,7 +68,7 @@ repos:
     rev: 0.14.2
     hooks:
       - id: check-jsonschema
-        name: "Check GitHub Workflows"
+        name: 'Check GitHub Workflows'
         files: ^\.github/workflows/
         types: [yaml]
-        args: ["--schemafile", "https://json.schemastore.org/github-workflow"]
+        args: ['--schemafile', 'https://json.schemastore.org/github-workflow']

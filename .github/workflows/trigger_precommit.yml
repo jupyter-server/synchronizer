@@ -14,7 +14,7 @@ jobs:
       - uses: khan/pull-request-comment-trigger@1.0.0
         id: check
         with:
-          trigger: "auto run pre-commit"
+          trigger: 'auto run pre-commit'
       - if: steps.check.outputs.triggered == 'true'
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
       - if: steps.check.outputs.triggered == 'true'
@@ -22,6 +22,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pre_commit: true
-          commit_message: "auto run pre-commit"
+          commit_message: 'auto run pre-commit'
           target: ${{ github.event.issue.html_url }}
           association: ${{ github.event.comment.author_association }}

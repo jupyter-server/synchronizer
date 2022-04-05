@@ -6,17 +6,10 @@ from jupyter_server.extension.application import ExtensionApp
 from jupyter_server.gateway.gateway_client import GatewayClient
 from jupyter_server.utils import run_sync
 from tornado.escape import json_decode
-from traitlets import default
-from traitlets import Float
-from traitlets import Instance
-from traitlets import TraitError
-from traitlets import Type
-from traitlets import Unicode
-from traitlets import validate
+from traitlets import Float, Instance, TraitError, Type, Unicode, default, validate
 
 from .kernel_db import KernelTable
-from .kernel_records import KernelRecord
-from .kernel_records import KernelRecordList
+from .kernel_records import KernelRecord, KernelRecordList
 
 
 class SynchronizerExtension(ExtensionApp):
@@ -57,9 +50,7 @@ class SynchronizerExtension(ExtensionApp):
                 raise TraitError("The given file is not an SQLite database file.")
         return value
 
-    kernel_record_class = Type(default_value=KernelRecord, klass=KernelRecord).tag(
-        config=True
-    )
+    kernel_record_class = Type(default_value=KernelRecord, klass=KernelRecord).tag(config=True)
 
     _kernel_records = KernelRecordList()
 
@@ -71,9 +62,9 @@ class SynchronizerExtension(ExtensionApp):
         return KernelTable()
 
     # Awaitable for fetching remote kernels.
-    gateway_client_class = Type(
-        default_value=None, klass=GatewayClient, allow_none=True
-    ).tag(config=True)
+    gateway_client_class = Type(default_value=None, klass=GatewayClient, allow_none=True).tag(
+        config=True
+    )
 
     gateway_client = Instance(default_value=None, klass=GatewayClient, allow_none=True)
 
@@ -105,7 +96,6 @@ class SynchronizerExtension(ExtensionApp):
 
     def fetch_recorded_kernels(self) -> None:
         """Fetch kernels stored in the local Kernel Database."""
-        items = self.kernel_table.list()
         for k in self.kernel_table.list():
             kernel = self.kernel_record_class(
                 kernel_id=k.kernel_id, remote_id=k.remote_id, recorded=True
@@ -130,12 +120,7 @@ class SynchronizerExtension(ExtensionApp):
 
     def record_kernels(self):
         for kernel in self._kernel_records._records:
-            if (
-                not kernel.recorded
-                and kernel.kernel_id
-                and kernel.remote_id
-                and kernel.alive
-            ):
+            if not kernel.recorded and kernel.kernel_id and kernel.remote_id and kernel.alive:
                 self.kernel_table.save(kernel)
                 kernel.recorded = True
 
@@ -168,24 +153,17 @@ class SynchronizerExtension(ExtensionApp):
             known_kids = list(mkm._kernels.keys()) + list(mkm._pending_kernels.keys())
             if kid not in known_kids:
                 self.log.info(
-                    (
-                        f"Kernel {kid} found in the session_manager but "
-                        f"not in the kernel_manager. Deleting this session."
-                    )
+                    f"Kernel {kid} found in the session_manager but "
+                    f"not in the kernel_manager. Deleting this session."
                 )
                 # session = await self.get_session(kernel_id=kid)
-                self.session_manager.cursor.execute(
-                    "DELETE FROM session WHERE kernel_id=?", (kid,)
-                )
+                self.session_manager.cursor.execute("DELETE FROM session WHERE kernel_id=?", (kid,))
             # Check the contents manager for documents.
             file_exists = self.contents_manager.exists(path=session["path"])
             if not file_exists:
                 session_id = session["id"]
                 self.log.info(
-                    (
-                        f"The document path for {session_id} was not found. "
-                        f"Deleting this session."
-                    )
+                    f"The document path for {session_id} was not found. Deleting this session."
                 )
                 await self.session_manager.delete_session(session_id)
 
@@ -205,10 +183,8 @@ class SynchronizerExtension(ExtensionApp):
                     ):
                         continue
                     self.log.info(
-                        (
-                            f"Kernel {kernel_id} found in the kernel_manager is not "
-                            f"found in the session database. Shutting down the kernel."
-                        )
+                        f"Kernel {kernel_id} found in the kernel_manager is not "
+                        f"found in the session database. Shutting down the kernel."
                     )
                     await self.multi_kernel_manager.shutdown_kernel(kernel_id)
                 # Log any failures, but don't raise exceptions.
@@ -263,9 +239,7 @@ class SynchronizerExtension(ExtensionApp):
 
     def start_regular_syncing(self):
         """Run regular syncing in a background task."""
-        return asyncio.ensure_future(
-            self._regular_syncing(interval=self.syncing_interval)
-        )
+        return asyncio.ensure_future(self._regular_syncing(interval=self.syncing_interval))
 
     def initialize_settings(self):
         self.initialize_configurables()
