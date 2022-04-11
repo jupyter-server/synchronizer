@@ -3,17 +3,34 @@ import pathlib
 import uuid
 
 from jupyter_server.extension.application import ExtensionApp
-from jupyter_server.gateway.gateway_client import GatewayClient
-from jupyter_server.utils import run_sync
-from tornado.escape import json_decode
-from traitlets import Float, Instance, TraitError, Type, Unicode, default, validate
+from jupyter_server.utils import ensure_async, run_sync
+from traitlets import (
+    Bool,
+    Float,
+    Instance,
+    TraitError,
+    Type,
+    Unicode,
+    default,
+    validate,
+)
 
+from .handlers import handlers
 from .kernel_db import KernelTable
 from .kernel_records import KernelRecord, KernelRecordList
+from .traits import Awaitable
 
 
 class SynchronizerExtension(ExtensionApp):
-    """A configurable class for syncing all managers in Jupyter Server."""
+    """A Jupyter Server extension for syncing all managers in Jupyter Server."""
+
+    name = "synchronizer"
+    handlers = handlers
+
+    autosync = Bool(
+        default_value=False,
+        help="If True, the extension will periodically synchronize the server automatically.",
+    ).tag(config=True)
 
     syncing_interval = Float(
         default_value=5.0,
@@ -61,70 +78,86 @@ class SynchronizerExtension(ExtensionApp):
     def _default_kernel_remote_table(self):  # pragma: no cover
         return KernelTable()
 
-    # Awaitable for fetching remote kernels.
-    gateway_client_class = Type(default_value=None, klass=GatewayClient, allow_none=True).tag(
-        config=True
-    )
+    fetch_running_kernels = Awaitable(
+        help="The coroutine function used to fetch and record running kernels that might not be found/managed by Jupyter Server (i.e. they are managed by a remote Kernel Gateway). "
+    ).tag(config=True)
 
-    gateway_client = Instance(default_value=None, klass=GatewayClient, allow_none=True)
+    @default("fetch_running_kernels")
+    def default_fetch_running_kernels(self):
+        async def fetch_running_kernels(self):
+            kernels = await ensure_async(self.multi_kernel_manager.list_kernels())
+            # Hydrate kernelmanager for all remote kernels
+            for k in kernels:
+                kernel = self.kernel_record_class(kernel_id=k["id"], alive=True)
+                self._kernel_records.update(kernel)
+
+        return fetch_running_kernels
 
     multi_kernel_manager = Instance(
         klass="jupyter_server.services.kernels.kernelmanager.MappingKernelManager",
-        allow_none=True,
     )
-    session_manager = Instance(
-        klass="jupyter_server.services.sessions.sessionmanager.SessionManager",
-        allow_none=True,
-    )
+
+    @default("multi_kernel_manager")
+    def _default_multi_kernel_manager(self):
+        return self.serverapp.kernel_manager
+
     contents_manager = Instance(
         klass="jupyter_server.services.contents.manager.ContentsManager",
-        allow_none=True,
     )
 
-    async def fetch_remote_kernels(self) -> None:
-        """Fetch kernels from the remote kernel service"""
-        r = await self.gateway_client.list_kernels()
-        response = json_decode(r.body)
-        # Hydrate kernelmanager for all remote kernels
-        for item in response:
-            kernel = self.kernel_record_class(remote_id=item["id"], alive=True)
-            self._kernel_records.update(kernel)
+    @default("contents_manager")
+    def _default_contents_manager(self):
+        return self.serverapp.contents_manager
 
-    def fetch_local_kernels(self) -> None:
-        """Fetch kernels running in the same process as the Jupyter Server."""
-        pass
+    session_manager = Instance(
+        klass="jupyter_server.services.sessions.sessionmanager.SessionManager",
+    )
+
+    @default("session_manager")
+    def _default_session_manager(self):
+        return self.serverapp.session_manager
 
     def fetch_recorded_kernels(self) -> None:
         """Fetch kernels stored in the local Kernel Database."""
-        for k in self.kernel_table.list():
-            kernel = self.kernel_record_class(
-                kernel_id=k.kernel_id, remote_id=k.remote_id, recorded=True
-            )
-            self._kernel_records.update(kernel)
+        for record in self.kernel_table.list():
+            record.recorded = True
+            self._kernel_records.update(record)
 
     def fetch_managed_kernels(self) -> None:
         """Fetch kernel records from any managed kernels (instances of
-        KernelManagers) in the MultiKernelManager."""
-        for kernel_id, km in self.multi_kernel_manager._kernels.items():
-            kernel = self.kernel_record_class(
-                remote_id=km.remote_id, kernel_id=kernel_id, managed=True
-            )
-            self._kernel_records.update(kernel)
+        KernelManagers) in the MultiKernelManager.
+        """
+        for km in self.multi_kernel_manager._kernels.values():
+            record = self.kernel_record_class.from_manager(km)
+            self._kernel_records.update(record)
 
     async def fetch_kernel_records(self):
-        if self.gateway_client:
-            await self.fetch_remote_kernels()
-        self.fetch_local_kernels()
+        """Fetch all the information that can be found about
+        kernels started by this server.
+        """
+        await self.fetch_running_kernels(self)
         self.fetch_recorded_kernels()
         self.fetch_managed_kernels()
+        # Log all kernel records seen at this stage
+        self.log.debug(self._kernel_records)
 
     def record_kernels(self):
+        """Record the current kernels to the kernel database."""
         for kernel in self._kernel_records._records:
-            if not kernel.recorded and kernel.kernel_id and kernel.remote_id and kernel.alive:
+            conditions = [
+                # Kernel isn't already recorded
+                not kernel.recorded,
+                # Kernel has all identifiers
+                all(kernel.get_identifier_values()),
+                # Kernel is still running
+                kernel.alive,
+            ]
+            if all(conditions):
                 self.kernel_table.save(kernel)
                 kernel.recorded = True
 
     def remove_stale_kernels(self):
+        """Remove kernels from the database that are no longer running."""
         for k in self._kernel_records._records:
             if not k.alive:
                 self._kernel_records.remove(k)
@@ -132,14 +165,16 @@ class SynchronizerExtension(ExtensionApp):
                     self.kernel_table.delete(kernel_id=k.kernel_id)
 
     async def hydrate_kernel_managers(self):
+        """Create KernelManagers for kernels found for this
+        server but are not yet managed.
+        """
         for k in self._kernel_records._records:
-            if not k.managed and k.remote_id and k.alive:
+            if not k.managed and k.alive:
                 if not k.kernel_id:
                     kernel_id = str(uuid.uuid4())
                     k.kernel_id = kernel_id
-                await self.multi_kernel_manager.start_kernel(
-                    kernel_id=k.kernel_id, remote_id=k.remote_id
-                )
+                identifiers = k.get_active_identifiers()
+                await self.multi_kernel_manager.start_kernel(**identifiers)
                 k.managed = True
 
     async def delete_stale_sessions(self):
@@ -152,7 +187,7 @@ class SynchronizerExtension(ExtensionApp):
             kid = session["kernel"]["id"]
             known_kids = list(mkm._kernels.keys()) + list(mkm._pending_kernels.keys())
             if kid not in known_kids:
-                self.log.info(
+                self.log.debug(
                     f"Kernel {kid} found in the session_manager but "
                     f"not in the kernel_manager. Deleting this session."
                 )
@@ -162,7 +197,7 @@ class SynchronizerExtension(ExtensionApp):
             file_exists = self.contents_manager.exists(path=session["path"])
             if not file_exists:
                 session_id = session["id"]
-                self.log.info(
+                self.log.debug(
                     f"The document path for {session_id} was not found. Deleting this session."
                 )
                 await self.session_manager.delete_session(session_id)
@@ -182,7 +217,7 @@ class SynchronizerExtension(ExtensionApp):
                         or kernel_id in self.session_manager._pending_sessions
                     ):
                         continue
-                    self.log.info(
+                    self.log.debug(
                         f"Kernel {kernel_id} found in the kernel_manager is not "
                         f"found in the session database. Shutting down the kernel."
                     )
@@ -221,8 +256,10 @@ class SynchronizerExtension(ExtensionApp):
         """Rehydrate sessions and kernels managers from the remote
         kernel service.
         """
+        self.log.debug("Synchronizing kernel records.")
         await self.sync_kernels()
-        # await self.sync_sessions()
+        self.log.debug("Synchronizing kernel sessions.")
+        await self.sync_sessions()
 
     async def _regular_syncing(self, interval=5.0):
         """Start regular syncing on a defined interval."""
@@ -247,15 +284,12 @@ class SynchronizerExtension(ExtensionApp):
 
     def initialize_configurables(self):
         self.update_config(self.serverapp.config)
-        if self.gateway_client_class:
-            self.gateway_client = self.gateway_client_class.instance()
-        self.contents_manager = self.serverapp.contents_manager
-        self.multi_kernel_manager = self.serverapp.kernel_manager
-        self.session_manager = self.serverapp.session_manager
         self.kernel_table = self.kernel_table_class(
             database_filepath=self.database_filepath,
             kernel_record_class=self.kernel_record_class,
         )
-        # Rehydrate the session manager and multi-kernel manager.
+        # Run the synchronizer once before starting the webapp, to
+        # ensure we start with the most accurate state.
         run_sync(self.sync_managers())
-        self.start_regular_syncing()
+        if self.autosync:
+            self.start_regular_syncing()

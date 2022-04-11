@@ -1,6 +1,8 @@
 from dataclasses import dataclass, fields
 from typing import Union
 
+from jupyter_client.manager import KernelManager
+
 
 class KernelRecordConflict(Exception):
     """An exception raised when trying to merge two
@@ -26,6 +28,17 @@ class KernelRecord:
     alive: Union[None, bool] = None
     recorded: Union[None, bool] = None
     managed: Union[None, bool] = None
+
+    @classmethod
+    def from_manager(cls, manager: KernelManager) -> "KernelRecord":
+        """Create a kernel from a KernelManager."""
+        record = cls()
+        # Look for the record fields as attributes the kernel manager
+        # and make the values match.
+        for field in cls.get_identifier_fields():
+            setattr(record, field, getattr(manager, field, None))
+        record.managed = True
+        return record
 
     @classmethod
     def get_identifier_fields(cls):
