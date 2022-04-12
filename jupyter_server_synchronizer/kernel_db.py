@@ -1,6 +1,6 @@
 import pathlib
 import sqlite3
-from typing import List
+from typing import Any, List
 
 from traitlets import TraitError, Type, Unicode, validate
 from traitlets.config.configurable import Configurable
@@ -70,7 +70,7 @@ class KernelTable(Configurable):
     def _table_columns(self):
         return set(self.kernel_record_class.get_identifier_fields())
 
-    def query(self, query_string, **identifiers):
+    def query(self, query_string: str, **identifiers: Any) -> None:
         """Build and execute a query."""
         if any(key in identifiers for key in self._table_columns):
             query = query_string.format(
@@ -80,22 +80,22 @@ class KernelTable(Configurable):
             self.cursor.execute(query, tuple(identifiers.values()))
         else:
             err_message = "A valid identifying field for a Kernel Record was not given."
-            identifiers = [field for field in self.kernel_record_type if field.endswith("_id")]
-            if identifiers:
-                err_message += f" Examples include: {identifiers}"
+            identifiers_list = [field for field in self.kernel_record_type if field.endswith("_id")]
+            if identifiers_list:
+                err_message += f" Examples include: {identifiers_list}"
             raise Exception(err_message)
 
     def save(self, record: KernelRecord) -> None:
         fields = record.get_active_identifiers()
         columns = ",".join(fields.keys())
-        values = tuple(fields.values())
-        if len(values) > 1:
-            values = str(values)
+        values_tuple = tuple(fields.values())
+        if len(values_tuple) > 1:
+            values = str(values_tuple)
         else:
-            values = f"('{values[0]}')"
+            values = f"('{values_tuple[0]}')"
         self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")
 
-    def exists(self, **identifier) -> bool:
+    def exists(self, **identifier: Any) -> bool:
         """Check to see if the session of a given name exists"""
         record = self.kernel_record_class(**identifier)
         self.cursor.execute(
@@ -130,19 +130,19 @@ class KernelTable(Configurable):
         x = f"UPDATE {self._table_name} SET {update_string} WHERE {record_field}='{record_id}';"
         self.cursor.execute(x)
 
-    def delete(self, **identifier) -> None:
+    def delete(self, **identifier: Any) -> None:
         self.query("DELETE FROM {table} WHERE {0}=?", **identifier)
 
     def row_to_model(self, row: sqlite3.Row) -> KernelRecord:
         items = {field: row[field] for field in self.kernel_record_class.get_identifier_fields()}
-        return self.kernel_record_class(**items)
+        return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
     def list(self) -> List[KernelRecord]:
         self.cursor.execute(f"SELECT * FROM {self._table_name}")
         rows = self.cursor.fetchall()
         return [self.row_to_model(row) for row in rows]
 
-    def get(self, **identifier) -> KernelRecord:
+    def get(self, **identifier: Any) -> KernelRecord:
         self.query("SELECT * FROM {table} WHERE {0}=?", **identifier)
         row = self.cursor.fetchone()
         if not row:

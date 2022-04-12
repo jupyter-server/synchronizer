@@ -52,6 +52,7 @@ def test_kernel_record_list():
     # Test .get()
     r_ = records.get(r)
     assert r == r_
+    assert r.kernel_id is not None
     r_ = records.get(r.kernel_id)
     assert r == r_
 
@@ -158,6 +159,7 @@ def test_kernel_record_list_of_custom_records():
     # Test .get()
     r_ = records.get(r)
     assert r == r_
+    assert r.kernel_id is not None
     r_ = records.get(r.kernel_id)
     assert r == r_
 
