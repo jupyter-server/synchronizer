@@ -3,7 +3,7 @@ import pathlib
 import uuid
 
 from jupyter_server.extension.application import ExtensionApp
-from jupyter_server.utils import ensure_async, run_sync
+from jupyter_server.utils import run_sync
 from traitlets import (
     Bool,
     Float,
@@ -15,6 +15,7 @@ from traitlets import (
     validate,
 )
 
+from .gateway import fetch_gateway_kernels
 from .handlers import handlers
 from .kernel_db import KernelTable
 from .kernel_records import KernelRecord, KernelRecordList
@@ -79,19 +80,16 @@ class SynchronizerExtension(ExtensionApp):
         return KernelTable()
 
     fetch_running_kernels = Awaitable(
-        help="The coroutine function used to fetch and record running kernels that might not be found/managed by Jupyter Server (i.e. they are managed by a remote Kernel Gateway). "
+        help=(
+            "The coroutine function used to fetch and record running kernels "
+            "that might not be found/managed by Jupyter Server (i.e. they "
+            "are managed by a remote Kernel Gateway)."
+        )
     ).tag(config=True)
 
     @default("fetch_running_kernels")
     def default_fetch_running_kernels(self):
-        async def fetch_running_kernels(self):
-            kernels = await ensure_async(self.multi_kernel_manager.list_kernels())
-            # Hydrate kernelmanager for all remote kernels
-            for k in kernels:
-                kernel = self.kernel_record_class(kernel_id=k["id"], alive=True)
-                self._kernel_records.update(kernel)
-
-        return fetch_running_kernels
+        return fetch_gateway_kernels
 
     multi_kernel_manager = Instance(
         klass="jupyter_server.services.kernels.kernelmanager.MappingKernelManager",
