@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.3
+
+([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.2...af4c669a9b4a41845451fa93be546aa442c9d680))
+
+### Enhancements made
+
+- Make Synchronizer work with Jupyter Kernel Gateways out-of-the-box [#7](https://github.com/jupyter-server/synchronizer/pull/7) ([@Zsailer](https://github.com/Zsailer))
+
+### Maintenance and upkeep improvements
+
+- Add typing support [#6](https://github.com/jupyter-server/synchronizer/pull/6) ([@blink1073](https://github.com/blink1073))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-12&to=2022-04-12&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-04-12..2022-04-12&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Awelcome+updated%3A2022-04-12..2022-04-12&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-12..2022-04-12&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.2
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.1...d48b159af0572834188a15a2501f5f26bae9644a))
@@ -21,7 +41,5 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-05&to=2022-04-11&type=c))
 
 [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-04-05..2022-04-11&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-05..2022-04-11&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1
