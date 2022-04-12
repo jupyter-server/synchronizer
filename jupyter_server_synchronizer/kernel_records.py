@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields
-from typing import Union
+from typing import List, Union
 
 from jupyter_client.manager import KernelManager
 
@@ -66,7 +66,7 @@ class KernelRecord:
                 identifiers[id] = val
         return identifiers
 
-    def __eq__(self, other: "KernelRecord") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Two kernel records are equivalent if *any* of their
         unique identifiers (keys ending in `_id`) are equal.
         """
@@ -117,14 +117,14 @@ class KernelRecordList:
     """
 
     def __init__(self, *records):
-        self._records = []
+        self._records: List[KernelRecord] = []
         for record in records:
             self.update(record)
 
     def __str__(self):
         return str(self._records)
 
-    def __contains__(self, record: Union[KernelRecord, str]):
+    def __contains__(self, record: Union[KernelRecord, str]) -> bool:
         """Search for records by kernel_id and session_id"""
         if isinstance(record, KernelRecord) and record in self._records:
             return True
