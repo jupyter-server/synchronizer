@@ -12,6 +12,7 @@ recursive-include tests *
 # Documentation
 graft docs
 exclude docs/\#*
+exclude Makefile
 
 # docs subdirs we want to skip
 prune docs/build
