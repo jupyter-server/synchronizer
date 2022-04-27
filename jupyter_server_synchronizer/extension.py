@@ -28,6 +28,11 @@ class SynchronizerExtension(ExtensionApp):
     name = "synchronizer"
     handlers = handlers
 
+    sync_before_server = Bool(
+        default_value=False,
+        help="Run the synchronizer once before the underlying Jupyter Server starts?",
+    ).tag(config=True)
+
     autosync = Bool(
         default_value=False,
         help="If True, the extension will periodically synchronize the server automatically.",
@@ -288,6 +293,7 @@ class SynchronizerExtension(ExtensionApp):
         )
         # Run the synchronizer once before starting the webapp, to
         # ensure we start with the most accurate state.
-        run_sync(self.sync_managers())
+        if self.sync_before_server:
+            run_sync(self.sync_managers())
         if self.autosync:
             self.start_regular_syncing()
