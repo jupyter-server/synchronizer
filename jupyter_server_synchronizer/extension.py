@@ -160,12 +160,17 @@ class SynchronizerExtension(ExtensionApp):
                 kernel.recorded = True
 
     def remove_stale_kernels(self):
-        """Remove kernels from the database that are no longer running."""
+        """Remove kernels that are no longer running
+        from the database and MultiKernelManager."""
         for k in self._kernel_records._records:
             if not k.alive:
                 self._kernel_records.remove(k)
                 if k.recorded:
                     self.kernel_table.delete(kernel_id=k.kernel_id)
+                # If the kernel is currently being managed locally,
+                # remove it from te
+                if k.managed:
+                    self.multi_kernel_manager.remove_kernel(k.kernel_id)
 
     async def hydrate_kernel_managers(self):
         """Create KernelManagers for kernels found for this
