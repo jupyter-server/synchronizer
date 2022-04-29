@@ -1,32 +1,21 @@
 import asyncio
-import pathlib
 import uuid
 
-from jupyter_server.extension.application import ExtensionApp
-from jupyter_server.utils import run_sync
-from traitlets import (
-    Bool,
-    Float,
-    Instance,
-    TraitError,
-    Type,
-    Unicode,
-    default,
-    validate,
+from jupyter_server.services.sessions.sessionmanager import (
+    KernelSessionRecordList,
+    SessionManager,
 )
+from jupyter_server.utils import run_sync
+from traitlets import Bool, Float, Instance, Type, default
 
 from .gateway import fetch_gateway_kernels
-from .handlers import handlers
 from .kernel_db import KernelTable
 from .kernel_records import KernelRecord, KernelRecordList
 from .traits import Awaitable
 
 
-class SynchronizerExtension(ExtensionApp):
+class SynchronizerSessionManager(SessionManager):
     """A Jupyter Server extension for syncing all managers in Jupyter Server."""
-
-    name = "synchronizer"
-    handlers = handlers
 
     sync_before_server = Bool(
         default_value=False,
@@ -43,42 +32,20 @@ class SynchronizerExtension(ExtensionApp):
         help="Interval (in seconds) for each call to the periodic syncing method.",
     ).tag(config=True)
 
-    database_filepath = Unicode(
-        default_value=":memory:",
-        help=(
-            "The filesystem path to SQLite Database file "
-            "(e.g. /path/to/session_database.db). By default, the session "
-            "database is stored in-memory (i.e. `:memory:` setting from sqlite3) "
-            "and does not persist when the current Jupyter Server shuts down."
-        ),
-    ).tag(config=True)
-
-    @validate("database_filepath")
-    def _validate_database_filepath(self, proposal):
-        value = proposal["value"]
-        if value == ":memory:":
-            return value
-        path = pathlib.Path(value)
-        if path.exists():
-            # Verify that the database path is not a directory.
-            if path.is_dir():
-                raise TraitError(
-                    "`database_filepath` expected a file path, but the given path is a directory."
-                )
-            # Verify that database path is an SQLite 3 Database by checking its header.
-            with open(value, "rb") as f:
-                header = f.read(100)
-
-            if not header.startswith(b"SQLite format 3") and not header == b"":
-                raise TraitError("The given file is not an SQLite database file.")
-        return value
-
     kernel_record_class = Type(default_value=KernelRecord, klass=KernelRecord).tag(config=True)
 
     _kernel_records = KernelRecordList()
 
     kernel_table_class = Type(default_value=KernelTable, klass=KernelTable)
     kernel_table = Instance(klass=KernelTable)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._pending_sessions = KernelSessionRecordList()
+        self.kernel_table = self.kernel_table_class(
+            database_filepath=self.database_filepath,
+            kernel_record_class=self.kernel_record_class,
+        )
 
     @default("kernel_table")
     def _default_kernel_remote_table(self):  # pragma: no cover
@@ -96,30 +63,6 @@ class SynchronizerExtension(ExtensionApp):
     def default_fetch_running_kernels(self):
         return fetch_gateway_kernels
 
-    multi_kernel_manager = Instance(
-        klass="jupyter_server.services.kernels.kernelmanager.MappingKernelManager",
-    )
-
-    @default("multi_kernel_manager")
-    def _default_multi_kernel_manager(self):
-        return self.serverapp.kernel_manager
-
-    contents_manager = Instance(
-        klass="jupyter_server.services.contents.manager.ContentsManager",
-    )
-
-    @default("contents_manager")
-    def _default_contents_manager(self):
-        return self.serverapp.contents_manager
-
-    session_manager = Instance(
-        klass="jupyter_server.services.sessions.sessionmanager.SessionManager",
-    )
-
-    @default("session_manager")
-    def _default_session_manager(self):
-        return self.serverapp.session_manager
-
     def fetch_recorded_kernels(self) -> None:
         """Fetch kernels stored in the local Kernel Database."""
         for record in self.kernel_table.list():
@@ -130,7 +73,7 @@ class SynchronizerExtension(ExtensionApp):
         """Fetch kernel records from any managed kernels (instances of
         KernelManagers) in the MultiKernelManager.
         """
-        for km in self.multi_kernel_manager._kernels.values():
+        for km in self.kernel_manager._kernels.values():
             record = self.kernel_record_class.from_manager(km)
             self._kernel_records.update(record)
 
@@ -142,7 +85,7 @@ class SynchronizerExtension(ExtensionApp):
         self.fetch_recorded_kernels()
         self.fetch_managed_kernels()
         # Log all kernel records seen at this stage
-        self.log.debug(self._kernel_records)
+        self.log.debug(str(self._kernel_records))
 
     def record_kernels(self):
         """Record the current kernels to the kernel database."""
@@ -177,17 +120,19 @@ class SynchronizerExtension(ExtensionApp):
                     kernel_id = str(uuid.uuid4())
                     k.kernel_id = kernel_id
                 identifiers = k.get_active_identifiers()
-                await self.multi_kernel_manager.start_kernel(**identifiers)
+                await self.kernel_manager.start_kernel(**identifiers)
                 k.managed = True
 
     async def delete_stale_sessions(self):
         """Delete sessions that either have no kernel or no content
         found in the server.
         """
-        session_list = await self.session_manager.list_sessions()
-        mkm = self.multi_kernel_manager
-        for session in session_list:
-            kid = session["kernel"]["id"]
+        session_rows = self.cursor.execute("SELECT * FROM session")
+        mkm = self.kernel_manager
+        # We need to use fetchall() here, because we delete rows,
+        # which messes up the cursor if we're iterating over rows.
+        for session in session_rows.fetchall():
+            kid = session["kernel_id"]
             known_kids = list(mkm._kernels.keys()) + list(mkm._pending_kernels.keys())
             if kid not in known_kids:
                 self.log.debug(
@@ -195,36 +140,40 @@ class SynchronizerExtension(ExtensionApp):
                     f"not in the kernel_manager. Deleting this session."
                 )
                 # session = await self.get_session(kernel_id=kid)
-                self.session_manager.cursor.execute("DELETE FROM session WHERE kernel_id=?", (kid,))
-            # Check the contents manager for documents.
-            file_exists = self.contents_manager.exists(path=session["path"])
-            if not file_exists:
-                session_id = session["id"]
-                self.log.debug(
-                    f"The document path for {session_id} was not found. Deleting this session."
-                )
-                await self.session_manager.delete_session(session_id)
+                self.cursor.execute("DELETE FROM session WHERE kernel_id=?", (kid,))
+            # TODO: There is an issue with the logic below. It isn't necessarily
+            # guaranteed that the document listed in a session has been saved
+            # to disk. In particular, creating a new document in JLab causes
+            # issues for this logic. The session is created/saved before the
+            # new document is saved. The logic below doesn't *see* the document
+            # and subsequently deletes the session. There is no way (today) to
+            # get a "pending" content.
+            # # Check the contents manager for documents.
+            # file_exists = self.contents_manager.exists(path=session["path"])
+            # if not file_exists:
+            #     session_id = session["session_id"]
+            #     self.log.debug(
+            #         f"The document path for {session_id} was not found. Deleting this session."
+            #     )
+            #     await self.delete_session(session_id)
 
     async def shutdown_kernels_without_sessions(self):
         """Shutdown 'unknown' kernels (found in kernelmanager but
         not the session manager).
         """
-        for kernel_id in self.multi_kernel_manager.list_kernel_ids():
+        for kernel_id in self.kernel_manager.list_kernel_ids():
             try:
-                kernel = await self.session_manager.get_session(kernel_id=kernel_id)
+                kernel = await self.get_session(kernel_id=kernel_id)
             except Exception:
                 try:
-                    kernel = self.multi_kernel_manager.get_kernel(kernel_id)
-                    if (
-                        not kernel.ready.done()
-                        or kernel_id in self.session_manager._pending_sessions
-                    ):
+                    kernel = self.kernel_manager.get_kernel(kernel_id)
+                    if not kernel.ready.done() or kernel_id in self._pending_sessions:
                         continue
                     self.log.debug(
                         f"Kernel {kernel_id} found in the kernel_manager is not "
                         f"found in the session database. Shutting down the kernel."
                     )
-                    await self.multi_kernel_manager.shutdown_kernel(kernel_id)
+                    await self.kernel_manager.shutdown_kernel(kernel_id)
                 # Log any failures, but don't raise exceptions.
                 except Exception as err2:
                     self.log.info(err2)
@@ -264,6 +213,62 @@ class SynchronizerExtension(ExtensionApp):
         self.log.debug("Synchronizing kernel sessions.")
         await self.sync_sessions()
 
+    async def list_sessions(self):
+        # Sync everything before listing sessions.
+        await self.sync_managers()
+        return await super().list_sessions()
+
+    # async def row_to_model(self, row, tolerate_culled=False):
+    #     """Takes sqlite database session row and turns it into a dictionary"""
+    #     kernel_culled = await ensure_async(self.kernel_culled(row["kernel_id"]))
+    #     if kernel_culled:
+    #         # The kernel was culled or died without deleting the session.
+    #         # We can't use delete_session here because that tries to find
+    #         # and shut down the kernel - so we'll delete the row directly.
+    #         #
+    #         # If caller wishes to tolerate culled kernels, log a warning
+    #         # and return None.  Otherwise, raise KeyError with a similar
+    #         # message.
+    #         self.cursor.execute("DELETE FROM session WHERE session_id=?", (row["session_id"],))
+    #         msg = (
+    #             "Kernel '{kernel_id}' appears to have been culled or died unexpectedly, "
+    #             "invalidating session '{session_id}'. The session has been removed.".format(
+    #                 kernel_id=row["kernel_id"], session_id=row["session_id"]
+    #             )
+    #         )
+    #         if tolerate_culled:
+    #             self.log.warning(f"{msg}  Continuing...")
+    #             return
+    #         raise KeyError(msg)
+
+    #     kernel_model = await ensure_async(self.kernel_manager.kernel_model(row["kernel_id"]))
+    #     model = {
+    #         "id": row["session_id"],
+    #         "path": row["path"],
+    #         "name": row["name"],
+    #         "type": row["type"],
+    #         "kernel": kernel_model,
+    #     }
+    #     if row["type"] == "notebook":
+    #         # Provide the deprecated API.
+    #         model["notebook"] = {"path": row["path"], "name": row["name"]}
+    #     return model
+
+    # async def list_sessions(self):
+    #     """Returns a list of dictionaries containing all the information from
+    #     the session database"""
+    #     c = self.cursor.execute("SELECT * FROM session")
+    #     result = []
+    #     # We need to use fetchall() here, because row_to_model can delete rows,
+    #     # which messes up the cursor if we're iterating over rows.
+    #     for row in c.fetchall():
+    #         try:
+    #             model = await self.row_to_model(row)
+    #             result.append(model)
+    #         except KeyError:
+    #             pass
+    #     return result
+
     async def _regular_syncing(self, interval=5.0):
         """Start regular syncing on a defined interval."""
         while True:
@@ -280,20 +285,3 @@ class SynchronizerExtension(ExtensionApp):
     def start_regular_syncing(self):
         """Run regular syncing in a background task."""
         return asyncio.ensure_future(self._regular_syncing(interval=self.syncing_interval))
-
-    def initialize_settings(self):
-        self.initialize_configurables()
-        return super().initialize_settings()
-
-    def initialize_configurables(self):
-        self.update_config(self.serverapp.config)
-        self.kernel_table = self.kernel_table_class(
-            database_filepath=self.database_filepath,
-            kernel_record_class=self.kernel_record_class,
-        )
-        # Run the synchronizer once before starting the webapp, to
-        # ensure we start with the most accurate state.
-        if self.sync_before_server:
-            run_sync(self.sync_managers())
-        if self.autosync:
-            self.start_regular_syncing()
