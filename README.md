@@ -1,6 +1,6 @@
 # Jupyter Server Synchronizer
 
-A server extension that synchronizes all managers in a running Jupyter Server.
+A Jupyter Server Session Manager that rehydrates and persists kernels and sessions beyond the lifetime of a server.
 
 This is particularly useful for Jupyter Servers running remote kernels and contents.
 
