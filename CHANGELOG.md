@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.4
+
+([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.3...ca069ec88ee718ff24d014132dc3de7e187af6ea))
+
+### Enhancements made
+
+- Synchronizer as a session manager [#13](https://github.com/jupyter-server/synchronizer/pull/13) ([@Zsailer](https://github.com/Zsailer))
+- Synchronizing before the server starts should be configurable. [#11](https://github.com/jupyter-server/synchronizer/pull/11) ([@Zsailer](https://github.com/Zsailer))
+
+### Maintenance and upkeep improvements
+
+- [pre-commit.ci] pre-commit autoupdate [#10](https://github.com/jupyter-server/synchronizer/pull/10) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#9](https://github.com/jupyter-server/synchronizer/pull/9) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-12&to=2022-04-29&type=c))
+
+[@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-04-12..2022-04-29&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-12..2022-04-29&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.3
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.2...af4c669a9b4a41845451fa93be546aa442c9d680))
@@ -21,8 +43,6 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-12&to=2022-04-12&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-04-12..2022-04-12&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Awelcome+updated%3A2022-04-12..2022-04-12&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-12..2022-04-12&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.2
 
