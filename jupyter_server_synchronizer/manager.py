@@ -15,7 +15,7 @@ from .traits import Awaitable
 
 
 class SynchronizerSessionManager(SessionManager):
-    """A Jupyter Server extension for syncing all managers in Jupyter Server."""
+    """A Jupyter Server Session Manager that rehydrates sessions/kernels on server restart."""
 
     sync_before_server = Bool(
         default_value=False,
@@ -217,57 +217,6 @@ class SynchronizerSessionManager(SessionManager):
         # Sync everything before listing sessions.
         await self.sync_managers()
         return await super().list_sessions()
-
-    # async def row_to_model(self, row, tolerate_culled=False):
-    #     """Takes sqlite database session row and turns it into a dictionary"""
-    #     kernel_culled = await ensure_async(self.kernel_culled(row["kernel_id"]))
-    #     if kernel_culled:
-    #         # The kernel was culled or died without deleting the session.
-    #         # We can't use delete_session here because that tries to find
-    #         # and shut down the kernel - so we'll delete the row directly.
-    #         #
-    #         # If caller wishes to tolerate culled kernels, log a warning
-    #         # and return None.  Otherwise, raise KeyError with a similar
-    #         # message.
-    #         self.cursor.execute("DELETE FROM session WHERE session_id=?", (row["session_id"],))
-    #         msg = (
-    #             "Kernel '{kernel_id}' appears to have been culled or died unexpectedly, "
-    #             "invalidating session '{session_id}'. The session has been removed.".format(
-    #                 kernel_id=row["kernel_id"], session_id=row["session_id"]
-    #             )
-    #         )
-    #         if tolerate_culled:
-    #             self.log.warning(f"{msg}  Continuing...")
-    #             return
-    #         raise KeyError(msg)
-
-    #     kernel_model = await ensure_async(self.kernel_manager.kernel_model(row["kernel_id"]))
-    #     model = {
-    #         "id": row["session_id"],
-    #         "path": row["path"],
-    #         "name": row["name"],
-    #         "type": row["type"],
-    #         "kernel": kernel_model,
-    #     }
-    #     if row["type"] == "notebook":
-    #         # Provide the deprecated API.
-    #         model["notebook"] = {"path": row["path"], "name": row["name"]}
-    #     return model
-
-    # async def list_sessions(self):
-    #     """Returns a list of dictionaries containing all the information from
-    #     the session database"""
-    #     c = self.cursor.execute("SELECT * FROM session")
-    #     result = []
-    #     # We need to use fetchall() here, because row_to_model can delete rows,
-    #     # which messes up the cursor if we're iterating over rows.
-    #     for row in c.fetchall():
-    #         try:
-    #             model = await self.row_to_model(row)
-    #             result.append(model)
-    #         except KeyError:
-    #             pass
-    #     return result
 
     async def _regular_syncing(self, interval=5.0):
         """Start regular syncing on a defined interval."""
