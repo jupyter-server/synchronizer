@@ -14,6 +14,7 @@ class KernelTable(Configurable):
     _table_name = "kerneltable"
     _connection = None
     _cursor = None
+    _ignored_fields = {"alive", "managed", "recorded"}
 
     database_filepath = Unicode(
         default_value=":memory:",
@@ -68,7 +69,7 @@ class KernelTable(Configurable):
 
     @property
     def _table_columns(self):
-        return set(self.kernel_record_class.get_identifier_fields())
+        return set(self.kernel_record_class.fields()).difference(self._ignored_fields)
 
     def query(self, query_string: str, **identifiers: Any) -> None:
         """Build and execute a query."""
@@ -86,7 +87,7 @@ class KernelTable(Configurable):
             raise Exception(err_message)
 
     def save(self, record: KernelRecord) -> None:
-        fields = record.get_active_identifiers()
+        fields = record.get_active_fields()
         columns = ",".join(fields.keys())
         values_tuple = tuple(fields.values())
         if len(values_tuple) > 1:
@@ -122,7 +123,7 @@ class KernelTable(Configurable):
             )
 
         # Build the query for updating columns.
-        values = record.get_active_identifiers()
+        values = record.get_active_fields()
         updates = []
         for key, value in values.items():
             updates.append(f"{key}='{value}'")
@@ -134,7 +135,7 @@ class KernelTable(Configurable):
         self.query("DELETE FROM {table} WHERE {0}=?", **identifier)
 
     def row_to_model(self, row: sqlite3.Row) -> KernelRecord:
-        items = {field: row[field] for field in self.kernel_record_class.get_identifier_fields()}
+        items = {field: row[field] for field in self.kernel_record_class.fields()}
         return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
     def list(self) -> List[KernelRecord]:
