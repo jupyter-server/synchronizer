@@ -87,7 +87,7 @@ class KernelTable(Configurable):
             raise Exception(err_message)
 
     def save(self, record: KernelRecord) -> None:
-        fields = record.get_active_fields()
+        fields = {k: v for k, v in record.get_active_fields().items() if k in self._table_columns}
         columns = ",".join(fields.keys())
         values_tuple = tuple(fields.values())
         if len(values_tuple) > 1:
@@ -123,9 +123,9 @@ class KernelTable(Configurable):
             )
 
         # Build the query for updating columns.
-        values = record.get_active_fields()
+        fields = {k: v for k, v in record.get_active_fields().items() if k in self._table_columns}
         updates = []
-        for key, value in values.items():
+        for key, value in fields.items():
             updates.append(f"{key}='{value}'")
         update_string = ", ".join(updates)
         x = f"UPDATE {self._table_name} SET {update_string} WHERE {record_field}='{record_id}';"
@@ -134,18 +134,18 @@ class KernelTable(Configurable):
     def delete(self, **identifier: Any) -> None:
         self.query("DELETE FROM {table} WHERE {0}=?", **identifier)
 
-    def row_to_model(self, row: sqlite3.Row) -> KernelRecord:
+    def row_to_record(self, row: sqlite3.Row) -> KernelRecord:
         items = {field: row[field] for field in self._table_columns}
         return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
     def list(self) -> List[KernelRecord]:
         self.cursor.execute(f"SELECT * FROM {self._table_name}")
         rows = self.cursor.fetchall()
-        return [self.row_to_model(row) for row in rows]
+        return [self.row_to_record(row) for row in rows]
 
     def get(self, **identifier: Any) -> KernelRecord:
         self.query("SELECT * FROM {table} WHERE {0}=?", **identifier)
         row = self.cursor.fetchone()
         if not row:
             raise Exception("No match was found in database.")
-        return self.row_to_model(row)
+        return self.row_to_record(row)
