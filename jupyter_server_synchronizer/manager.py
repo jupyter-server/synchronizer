@@ -119,8 +119,8 @@ class SynchronizerSessionManager(SessionManager):
                 if not k.kernel_id:
                     kernel_id = str(uuid.uuid4())
                     k.kernel_id = kernel_id
-                identifiers = k.get_active_fields()
-                await self.kernel_manager.start_kernel(**identifiers)
+                kwargs = k.get_active_fields()
+                await self.kernel_manager.start_kernel(**kwargs)
                 k.managed = True
 
     async def delete_stale_sessions(self):

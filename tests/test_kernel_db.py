@@ -28,11 +28,11 @@ def test_cursor(jp_environ):
 def test_save_kernelrecord(jp_environ):
     kernel_id = "test-kernel-id"
     table = KernelTable()
-    record = KernelRecord(kernel_id=kernel_id)
+    record = KernelRecord(kernel_id=kernel_id, kernel_name="python3")
     table.save(record)
     found_record = table.get(kernel_id=kernel_id)
     assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
-
+    assert hasattr(found_record, "kernel_name") and found_record.kernel_name == "python3"
 
 def test_delete_kernelrecord(jp_environ):
     kernel_id = "test-kernel-id"

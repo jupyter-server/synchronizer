@@ -32,7 +32,7 @@ class KernelRecord:
 
     @classmethod
     def fields(cls):
-        return fields(cls)
+        return [f.name for f in fields(cls)]
 
     @classmethod
     def from_manager(cls, manager: KernelManager) -> "KernelRecord":
@@ -78,7 +78,7 @@ class KernelRecord:
         for field in fields(self):
             value = getattr(self, field.name)
             if value:
-                fields[field.name] = value
+                items[field.name] = value
         return items
 
     def __eq__(self, other: object) -> bool:

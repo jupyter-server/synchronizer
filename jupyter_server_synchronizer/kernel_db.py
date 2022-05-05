@@ -135,7 +135,7 @@ class KernelTable(Configurable):
         self.query("DELETE FROM {table} WHERE {0}=?", **identifier)
 
     def row_to_model(self, row: sqlite3.Row) -> KernelRecord:
-        items = {field: row[field] for field in self.kernel_record_class.fields()}
+        items = {field: row[field] for field in self._table_columns}
         return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
     def list(self) -> List[KernelRecord]:
