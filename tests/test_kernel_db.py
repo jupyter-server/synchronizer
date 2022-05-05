@@ -34,6 +34,7 @@ def test_save_kernelrecord(jp_environ):
     assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
     assert hasattr(found_record, "kernel_name") and found_record.kernel_name == "python3"
 
+
 def test_delete_kernelrecord(jp_environ):
     kernel_id = "test-kernel-id"
     table = KernelTable()
