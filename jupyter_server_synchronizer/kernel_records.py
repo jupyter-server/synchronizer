@@ -25,9 +25,14 @@ class KernelRecord:
     # A Kernel record should have at least one field
     # that ends with `_id` in its keyname.
     kernel_id: Union[None, str] = None
+    kernel_name: Union[None, str] = None
     alive: Union[None, bool] = None
     recorded: Union[None, bool] = None
     managed: Union[None, bool] = None
+
+    @classmethod
+    def fields(cls):
+        return [f.name for f in fields(cls)]
 
     @classmethod
     def from_manager(cls, manager: KernelManager) -> "KernelRecord":
@@ -37,6 +42,7 @@ class KernelRecord:
         # and make the values match.
         for field in cls.get_identifier_fields():
             setattr(record, field, getattr(manager, field, None))
+        record.kernel_name = manager.kernel_name
         record.managed = True
         return record
 
@@ -65,6 +71,15 @@ class KernelRecord:
             if val is not None:
                 identifiers[id] = val
         return identifiers
+
+    def get_active_fields(self):
+        """Get a list of all fields that are not None"""
+        items = {}
+        for field in fields(self):
+            value = getattr(self, field.name)
+            if value:
+                items[field.name] = value
+        return items
 
     def __eq__(self, other: object) -> bool:
         """Two kernel records are equivalent if *any* of their

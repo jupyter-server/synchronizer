@@ -9,5 +9,7 @@ async def fetch_gateway_kernels(synchronizer):
     kernels = json_decode(response.body)
     # Hydrate kernelmanager for all remote kernels
     for k in kernels:
-        kernel = synchronizer.kernel_record_class(kernel_id=k["id"], alive=True)
+        kernel = synchronizer.kernel_record_class(
+            kernel_id=k["id"], kernel_name=k["name"], alive=True
+        )
         synchronizer._kernel_records.update(kernel)
