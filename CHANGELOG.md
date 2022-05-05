@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.5
+
+([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.4...fbf531a2ffc46d200c2f037fa802438110027dd0))
+
+### Bugs fixed
+
+- Add relevant kernel name to persistent kernel storage for rehydration [#17](https://github.com/jupyter-server/synchronizer/pull/17) ([@Zsailer](https://github.com/Zsailer))
+
+### Maintenance and upkeep improvements
+
+- Use flit build backend [#16](https://github.com/jupyter-server/synchronizer/pull/16) ([@blink1073](https://github.com/blink1073))
+- [pre-commit.ci] pre-commit autoupdate [#15](https://github.com/jupyter-server/synchronizer/pull/15) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-29&to=2022-05-05&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-04-29..2022-05-05&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-04-29..2022-05-05&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-29..2022-05-05&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.4
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.3...ca069ec88ee718ff24d014132dc3de7e187af6ea))
@@ -23,8 +44,6 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-12&to=2022-04-29&type=c))
 
 [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-04-12..2022-04-29&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-12..2022-04-29&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.3
 
