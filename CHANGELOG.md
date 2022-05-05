@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.6
+
+([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.5...11f5c8daa9501f39898a9a608014566db5075e44))
+
+### Bugs fixed
+
+- write only the allowed columns to the database [#19](https://github.com/jupyter-server/synchronizer/pull/19) ([@Zsailer](https://github.com/Zsailer))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-05-05&to=2022-05-05&type=c))
+
+[@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-05-05..2022-05-05&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.5
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.4...fbf531a2ffc46d200c2f037fa802438110027dd0))
@@ -22,8 +38,6 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-04-29&to=2022-05-05&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-04-29..2022-05-05&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-04-29..2022-05-05&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-04-29..2022-05-05&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.4
 
