@@ -1,9 +1,58 @@
 [build-system]
-requires = ["jupyter_packaging~=0.9", "pre-commit"]
-build-backend = "jupyter_packaging.build_api"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
-[tool.check-manifest]
-ignore = ["tbump.toml", ".*", "*.yml", "package-lock.json", "bootstrap*", "conftest.py"]
+[project]
+name = "jupyter_server_synchronizer"
+license = { file = "COPYING.md" }
+description = "A Jupyter Server Session Manager that rehydrates and synchronizes Jupyter sessions (e.g. notebook-kernel connections)."
+keywords = ["ipython", "jupyter"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: Jupyter",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.7"
+dependencies = ["jupyter_server>=1.16.0"]
+dynamic = ["version"]
+
+[[project.authors]]
+name = "Jupyter Development Team"
+email = "jupyter@googlegroups.com"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://jupyter-server-synchronizer.readthedocs.io"
+Documentation = "https://jupyter-server-synchronizer.readthedocs.io"
+Funding = "https://numfocus.org/donate"
+Source = "https://github.com/jupyter-server/synchronizer"
+Tracker = "https://github.com/jupyter-server/synchronizer/issues"
+
+[project.optional-dependencies]
+test = [
+  "coverage",
+  "pre-commit",
+  "pytest-cov",
+  "pytest-timeout",
+  "pytest-tornasync",
+  "pytest>=6.0",
+]
+
+[tool.flit.sdist]
+include = ["tests/"]
 
 [tool.pytest.ini_options]
 addopts = "-raXs --durations 10 --color=yes --doctest-modules"
