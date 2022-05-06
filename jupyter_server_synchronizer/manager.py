@@ -99,16 +99,24 @@ class SynchronizerSessionManager(SessionManager):
                 kernel.alive,
             ]
             if all(conditions):
-                self.kernel_table.save(kernel)
-                kernel.recorded = True
+                try:
+                    self.kernel_table.save(kernel)
+                    kernel.recorded = True
+                except Exception as e:
+                    self.log.error(f"Could not record kernel. {kernel}")
+                    self.log.error(e)
 
     def remove_stale_kernels(self):
         """Remove kernels from the database that are no longer running."""
         for k in self._kernel_records._records:
             if not k.alive:
-                self._kernel_records.remove(k)
-                if k.recorded:
-                    self.kernel_table.delete(kernel_id=k.kernel_id)
+                try:
+                    self._kernel_records.remove(k)
+                    if k.recorded:
+                        self.kernel_table.delete(kernel_id=k.kernel_id)
+                except Exception as e:
+                    self.log.error(f"Could not remove kernel from records: {k}")
+                    self.log.error(e)
 
     async def hydrate_kernel_managers(self):
         """Create KernelManagers for kernels found for this
@@ -120,8 +128,12 @@ class SynchronizerSessionManager(SessionManager):
                     kernel_id = str(uuid.uuid4())
                     k.kernel_id = kernel_id
                 kwargs = k.get_active_fields()
-                await self.kernel_manager.start_kernel(**kwargs)
-                k.managed = True
+                try:
+                    await self.kernel_manager.start_kernel(**kwargs)
+                    k.managed = True
+                except Exception as e:
+                    self.log.error(f"Could not hydrate a manager for kernel: {k}")
+                    self.log.error(e)
 
     async def delete_stale_sessions(self):
         """Delete sessions that either have no kernel or no content
@@ -213,10 +225,13 @@ class SynchronizerSessionManager(SessionManager):
         self.log.debug("Synchronizing kernel sessions.")
         await self.sync_sessions()
 
-    async def list_sessions(self):
-        # Sync everything before listing sessions.
-        await self.sync_managers()
-        return await super().list_sessions()
+        # Run the synchronizer loop
+        try:
+            await self.sync_managers()
+        except Exception as e:
+            self.log.error(e)
+        out = await SessionManager.list_sessions(self)
+        return out
 
     async def _regular_syncing(self, interval=5.0):
         """Start regular syncing on a defined interval."""
