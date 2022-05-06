@@ -230,7 +230,7 @@ class SynchronizerSessionManager(SessionManager):
             await self.sync_managers()
         except Exception as e:
             self.log.error(e)
-        out = await SessionManager.list_sessions(self)
+        out = await super().list_sessions(self)
         return out
 
     async def _regular_syncing(self, interval=5.0):
