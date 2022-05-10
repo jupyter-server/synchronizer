@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.8
+
+([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.7...16a1a8788d92de699b7d00945ad07aaf421bfdd0))
+
+### Bugs fixed
+
+- Add missing list_sessions method [#26](https://github.com/jupyter-server/synchronizer/pull/26) ([@Zsailer](https://github.com/Zsailer))
+
+### Maintenance and upkeep improvements
+
+- [pre-commit.ci] pre-commit autoupdate [#25](https://github.com/jupyter-server/synchronizer/pull/25) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-05-06&to=2022-05-10&type=c))
+
+[@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-05-06..2022-05-10&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-05-06..2022-05-10&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.7
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.6...720b7df76570a89d6391d4c103072f748cda1c47))
@@ -17,8 +37,6 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-05-05&to=2022-05-06&type=c))
 
 [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-05-05..2022-05-06&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.6
 
