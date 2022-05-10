@@ -225,6 +225,7 @@ class SynchronizerSessionManager(SessionManager):
         self.log.debug("Synchronizing kernel sessions.")
         await self.sync_sessions()
 
+    async def list_sessions(self):
         # Run the synchronizer loop
         try:
             await self.sync_managers()
