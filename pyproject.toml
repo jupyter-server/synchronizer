@@ -1,9 +1,10 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling>=0.25"]
+build-backend = "hatchling.build"
 
 [project]
 name = "jupyter_server_synchronizer"
+version = "0.0.9.dev0"
 license = { file = "COPYING.md" }
 description = "A Jupyter Server Session Manager that rehydrates and synchronizes Jupyter sessions (e.g. notebook-kernel connections)."
 keywords = ["ipython", "jupyter"]
@@ -24,7 +25,6 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = ["jupyter_server>=1.16.0"]
-dynamic = ["version"]
 
 [[project.authors]]
 name = "Jupyter Development Team"
@@ -50,9 +50,6 @@ test = [
   "pytest-tornasync",
   "pytest>=6.0",
 ]
-
-[tool.flit.sdist]
-include = ["tests/"]
 
 [tool.pytest.ini_options]
 addopts = "-raXs --durations 10 --color=yes --doctest-modules"
@@ -102,6 +99,9 @@ tag_template = "v{new_version}"
 [[tool.tbump.file]]
 src = "jupyter_server_synchronizer/_version.py"
 version_template = '({major}, {minor}, {patch}, "{channel}", "{release}")'
+
+[[tool.tbump.file]]
+src = "pyproject.toml"
 
 [[tool.tbump.field]]
 name = "channel"
