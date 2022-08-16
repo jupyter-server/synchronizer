@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.9
+
+([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.8...86ecf434d69d033f2682f5db4761f76938a9d7ca))
+
+### Bugs fixed
+
+- rm the redundant argument for list_sessions() [#42](https://github.com/jupyter-server/synchronizer/pull/42) ([@chiawchen](https://github.com/chiawchen))
+
+### Maintenance and upkeep improvements
+
+- [pre-commit.ci] pre-commit autoupdate [#40](https://github.com/jupyter-server/synchronizer/pull/40) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#39](https://github.com/jupyter-server/synchronizer/pull/39) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#38](https://github.com/jupyter-server/synchronizer/pull/38) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#37](https://github.com/jupyter-server/synchronizer/pull/37) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- Do not use dev version yet [#36](https://github.com/jupyter-server/synchronizer/pull/36) ([@blink1073](https://github.com/blink1073))
+- [pre-commit.ci] pre-commit autoupdate [#35](https://github.com/jupyter-server/synchronizer/pull/35) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#34](https://github.com/jupyter-server/synchronizer/pull/34) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#33](https://github.com/jupyter-server/synchronizer/pull/33) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#32](https://github.com/jupyter-server/synchronizer/pull/32) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#31](https://github.com/jupyter-server/synchronizer/pull/31) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- [pre-commit.ci] pre-commit autoupdate [#30](https://github.com/jupyter-server/synchronizer/pull/30) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+- Use hatch backend [#29](https://github.com/jupyter-server/synchronizer/pull/29) ([@blink1073](https://github.com/blink1073))
+- [pre-commit.ci] pre-commit autoupdate [#28](https://github.com/jupyter-server/synchronizer/pull/28) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-05-10&to=2022-08-16&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-05-10..2022-08-16&type=Issues) | [@chiawchen](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Achiawchen+updated%3A2022-05-10..2022-08-16&type=Issues) | [@codecov-commenter](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Acodecov-commenter+updated%3A2022-05-10..2022-08-16&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-05-10..2022-08-16&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Awelcome+updated%3A2022-05-10..2022-08-16&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.8
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.7...16a1a8788d92de699b7d00945ad07aaf421bfdd0))
@@ -21,8 +53,6 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-05-06&to=2022-05-10&type=c))
 
 [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-05-06..2022-05-10&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-05-06..2022-05-10&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.7
 
