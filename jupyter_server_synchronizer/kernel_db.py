@@ -81,7 +81,9 @@ class KernelTable(Configurable):
             self.cursor.execute(query, tuple(identifiers.values()))
         else:
             err_message = "A valid identifying field for a Kernel Record was not given."
-            identifiers_list = [field for field in self.kernel_record_class if field.endswith("_id")]
+            identifiers_list = [
+                field for field in self.kernel_record_class if field.endswith("_id")
+            ]
             if identifiers_list:
                 err_message += f" Examples include: {identifiers_list}"
             raise Exception(err_message)
