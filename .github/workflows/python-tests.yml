@@ -77,7 +77,14 @@ jobs:
           pip check
       - name: Run the tests
         run: |
-          pytest -vv || pytest -vv --lf
+          pytest -vv -W default || pytest -vv -W default --lf
+
+  check_links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      - uses: jupyterlab/maintainer-tools/.github/actions/check-links@v1
 
   make_sdist:
     name: Make SDist

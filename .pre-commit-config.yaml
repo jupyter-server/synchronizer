@@ -26,7 +26,7 @@ repos:
     hooks:
       - id: mypy
         args: ["--config-file", "pyproject.toml"]
-        additional_dependencies: [pytest, tornado]
+        additional_dependencies: [pytest, tornado, traitlets, jupyter_client, jupyter_server]
         stages: [manual]
 
   - repo: https://github.com/PyCQA/isort
@@ -36,10 +36,16 @@ repos:
         files: \.py$
         args: [--profile=black]
 
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.1
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.10.1
     hooks:
-      - id: prettier
+      - id: validate-pyproject
+        stages: [manual]
+
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.16
+    hooks:
+      - id: mdformat
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.0.0
@@ -59,17 +65,8 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies:
-          [
-            "flake8-bugbear==20.1.4",
-            "flake8-logging-format==0.6.0",
-            "flake8-implicit-str-concat==0.2.0",
-          ]
+          ["flake8-bugbear==22.6.22", "flake8-implicit-str-concat==0.2.0"]
         stages: [manual]
-
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.25.0
-    hooks:
-      - id: eslint
 
   - repo: https://github.com/sirosen/check-jsonschema
     rev: 0.18.3
