@@ -54,6 +54,9 @@ test = [
 [tool.hatch.version]
 path = "jupyter_server_synchronizer/_version.py"
 
+[tool.jupyter-releaser.options]
+post-version-spec = "dev"
+
 [tool.pytest.ini_options]
 addopts = "-raXs --durations 10 --color=yes --doctest-modules"
 testpaths = [
