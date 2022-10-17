@@ -29,19 +29,27 @@ jobs:
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
       - name: Install the Python dependencies
         run: |
-          pip install -e ".[test]" codecov
+          pip install -e ".[test]"
       - name: Run the tests
         if: ${{ !startsWith(matrix.python-version, 'pypy') && !startsWith(matrix.os, 'windows') }}
         run: |
           args="-vv --cov jupyter_server_synchronizer --cov-branch --cov-report term-missing:skip-covered"
-          python -m pytest $args  --cov-fail-under 70 || python -m pytest $args --lf
+          pytest $args  --cov-fail-under 70 || pytest $args --lf
       - name: Run the tests on pypy and windows
         if: ${{ startsWith(matrix.python-version, 'pypy') || startsWith(matrix.os, 'windows') }}
         run: |
-          python -m pytest -vv || python -m pytest -vv --lf
+          pytest -vv || pytest -vv --lf
       - name: Coverage
         run: |
+          pip install codecov
           codecov
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      - uses: jupyterlab/maintainer-tools/.github/actions/pre-commit@v1
 
   test_minimum_versions:
     name: Test Minimum Versions
@@ -78,6 +86,22 @@ jobs:
       - name: Run the tests
         run: |
           pytest -vv -W default || pytest -vv -W default --lf
+
+  check_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Base Setup
+        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      - name: Install Dependencies
+        run: |
+          pip install -e .
+      - name: Check Release
+        uses: jupyter-server/jupyter_releaser/.github/actions/check-release@v2
+        with:
+          version_spec: 100.100.100
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   check_links:
     runs-on: ubuntu-latest
