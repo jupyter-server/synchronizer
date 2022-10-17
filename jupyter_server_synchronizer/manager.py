@@ -5,7 +5,6 @@ from jupyter_server.services.sessions.sessionmanager import (
     KernelSessionRecordList,
     SessionManager,
 )
-from jupyter_server.utils import run_sync
 from traitlets import Bool, Float, Instance, Type, default
 
 from .gateway import fetch_gateway_kernels

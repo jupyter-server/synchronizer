@@ -1,2 +1,2 @@
-from ._version import __version__
-from .manager import SynchronizerSessionManager
+from ._version import __version__  # noqa
+from .manager import SynchronizerSessionManager  # noqa
