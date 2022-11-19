@@ -19,12 +19,12 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = ["jupyter_server>=1.16.0"]
 
 [[project.authors]]
@@ -52,6 +52,19 @@ test = [
 path = "jupyter_server_synchronizer/_version.py"
 validate-bump = false
 
+[tool.hatch.envs.test]
+features = ["test"]
+[tool.hatch.envs.test.scripts]
+test = "python -m pytest -vv {args}"
+nowarn = "test -W default {args}"
+
+[tool.hatch.envs.cov]
+features = ["test"]
+dependencies = ["coverage", "pytest-cov"]
+[tool.hatch.envs.cov.scripts]
+test = "python -m pytest -vv --cov jupyter_server_synchronizer --cov-branch --cov-report term-missing:skip-covered {args}"
+nowarn = "test -W default {args}"
+
 [tool.jupyter-releaser.options]
 post-version-spec = "dev"
 
@@ -59,6 +72,20 @@ post-version-spec = "dev"
 addopts = "-raXs --durations 10 --color=yes --doctest-modules"
 testpaths = [
     "tests/"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "if self.debug:",
+  "if settings.DEBUG",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  "if __name__ == .__main__.:",
+  "class .*\bProtocol\\):",
+"@(abc\\.)?abstractmethod",
 ]
 
 [tool.mypy]
