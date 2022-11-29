@@ -25,7 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 requires-python = ">=3.8"
-dependencies = ["jupyter_server>=1.16.0"]
+dependencies = ["jupyter_server>=1.21.0"]
 
 [[project.authors]]
 name = "Jupyter Development Team"
@@ -44,7 +44,7 @@ test = [
   "pre-commit",
   "pytest-cov",
   "pytest-timeout",
-  "pytest-tornasync",
+  "pytest-jupyter[server]>=0.4.1",
   "pytest>=7.0",
 ]
 
