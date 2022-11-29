@@ -44,7 +44,7 @@ test = [
   "pre-commit",
   "pytest-cov",
   "pytest-timeout",
-  "pytest-tornasync",
+  "pytest-jupyter[server]>=0.4.1",
   "pytest>=7.0",
 ]
 
