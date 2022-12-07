@@ -140,7 +140,7 @@ class KernelTable(Configurable):
         items = {field: row[field] for field in self._table_columns}
         return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
-    def list(self) -> List[KernelRecord]:
+    def list(self) -> List[KernelRecord]:  # noqa
         self.cursor.execute(f"SELECT * FROM {self._table_name}")
         rows = self.cursor.fetchall()
         return [self.row_to_record(row) for row in rows]

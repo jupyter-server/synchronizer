@@ -11,7 +11,7 @@ from jupyter_server_synchronizer.kernel_records import KernelRecord
 def test_database_is_created(jp_environ, jp_runtime_dir):
     path = jp_runtime_dir / "jupyter-session.db"
     table = KernelTable(database_filepath=str(path))
-    con = table.connection
+    _ = table.connection
     assert path.exists()
 
 

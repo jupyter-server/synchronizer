@@ -1,10 +1,7 @@
 import asyncio
 import uuid
 
-from jupyter_server.services.sessions.sessionmanager import (
-    KernelSessionRecordList,
-    SessionManager,
-)
+from jupyter_server.services.sessions.sessionmanager import KernelSessionRecordList, SessionManager
 from traitlets import Bool, Float, Instance, Type, default
 
 from .gateway import fetch_gateway_kernels
