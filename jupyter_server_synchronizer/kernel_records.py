@@ -4,7 +4,7 @@ from typing import List, Union
 from jupyter_client.manager import KernelManager
 
 
-class KernelRecordConflict(Exception):
+class KernelRecordConflict(Exception):  # noqa
     """An exception raised when trying to merge two
     kernels that have conflicting data.
     """
@@ -58,18 +58,18 @@ class KernelRecord:
     def get_identifier_values(self):
         """The values of all identifiers."""
         identifier_values = []
-        for id in self.get_identifier_fields():
-            if id.endswith("_id"):
-                identifier_values.append(getattr(self, id))
+        for id_ in self.get_identifier_fields():
+            if id_.endswith("_id"):
+                identifier_values.append(getattr(self, id_))
         return identifier_values
 
     def get_active_identifiers(self):
         """Return a dictionary of all identifiers that are not None."""
         identifiers = {}
-        for id in self.get_identifier_fields():
-            val = getattr(self, id)
+        for id_ in self.get_identifier_fields():
+            val = getattr(self, id_)
             if val is not None:
-                identifiers[id] = val
+                identifiers[id_] = val
         return identifiers
 
     def get_active_fields(self):
