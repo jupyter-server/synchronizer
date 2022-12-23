@@ -1,3 +1,4 @@
+"""Kernel records management."""
 from dataclasses import dataclass, fields
 from typing import List, Union
 
@@ -32,6 +33,7 @@ class KernelRecord:
 
     @classmethod
     def fields(cls):
+        """Get the fields."""
         return [f.name for f in fields(cls)]
 
     @classmethod
@@ -132,11 +134,13 @@ class KernelRecordList:
     """
 
     def __init__(self, *records):
+        """Initialize the record list."""
         self._records: List[KernelRecord] = []
         for record in records:
             self.update(record)
 
     def __str__(self):
+        """Str repr of the record list."""
         return str(self._records)
 
     def __contains__(self, record: Union[KernelRecord, str]) -> bool:
@@ -151,9 +155,11 @@ class KernelRecordList:
         return False
 
     def __len__(self):
+        """Length of the record list."""
         return len(self._records)
 
     def get(self, record: Union[KernelRecord, str]) -> KernelRecord:
+        """get a record."""
         if isinstance(record, str):
             for r in self._records:
                 if record in r.get_identifier_values():

@@ -1,3 +1,4 @@
+"""Gateway utils."""
 from jupyter_server.gateway.gateway_client import gateway_request
 from tornado.escape import json_decode
 

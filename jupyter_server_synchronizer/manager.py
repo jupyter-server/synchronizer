@@ -1,3 +1,4 @@
+"""A Jupyter Server Session Manager that rehydrates sessions/kernels on server restart."""
 import asyncio
 import uuid
 
@@ -36,6 +37,7 @@ class SynchronizerSessionManager(SessionManager):
     kernel_table = Instance(klass=KernelTable)
 
     def __init__(self, *args, **kwargs):
+        """Initialize the manager."""
         super().__init__(*args, **kwargs)
         self._pending_sessions = KernelSessionRecordList()
         self.kernel_table = self.kernel_table_class(
@@ -56,7 +58,7 @@ class SynchronizerSessionManager(SessionManager):
     ).tag(config=True)
 
     @default("fetch_running_kernels")
-    def default_fetch_running_kernels(self):
+    def _default_fetch_running_kernels(self):
         return fetch_gateway_kernels
 
     def fetch_recorded_kernels(self) -> None:
@@ -222,6 +224,7 @@ class SynchronizerSessionManager(SessionManager):
         await self.sync_sessions()
 
     async def list_sessions(self):
+        """List the sessions."""
         # Run the synchronizer loop
         try:
             await self.sync_managers()
