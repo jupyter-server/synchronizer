@@ -49,7 +49,7 @@ jobs:
          run: |
           hatch run typing:test
           hatch run lint:style
-          pipx run 'validate-pyproject[all]' pyproject.toml
+          pipx run interrogate -v .
 
   test_minimum_versions:
     name: Test Minimum Versions

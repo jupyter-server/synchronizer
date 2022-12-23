@@ -1,3 +1,4 @@
+"""Kernel database managment."""
 import pathlib
 import sqlite3
 from typing import Any, List
@@ -89,6 +90,7 @@ class KernelTable(Configurable):
             raise Exception(err_message)
 
     def save(self, record: KernelRecord) -> None:
+        """Save a record."""
         fields = {k: v for k, v in record.get_active_fields().items() if k in self._table_columns}
         columns = ",".join(fields.keys())
         values_tuple = tuple(fields.values())
@@ -110,6 +112,7 @@ class KernelTable(Configurable):
         return False
 
     def update(self, record: KernelRecord) -> None:
+        """Update a record."""
         found = False
         for record_field in record.get_identifier_fields():
             record_id = getattr(record, record_field)
@@ -134,18 +137,22 @@ class KernelTable(Configurable):
         self.cursor.execute(x)
 
     def delete(self, **identifier: Any) -> None:
+        """Delete a record."""
         self.query("DELETE FROM {table} WHERE {0}=?", **identifier)
 
     def row_to_record(self, row: sqlite3.Row) -> KernelRecord:
+        """Convert a row to a record."""
         items = {field: row[field] for field in self._table_columns}
         return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
     def list(self) -> List[KernelRecord]:  # noqa
+        """List all records."""
         self.cursor.execute(f"SELECT * FROM {self._table_name}")
         rows = self.cursor.fetchall()
         return [self.row_to_record(row) for row in rows]
 
     def get(self, **identifier: Any) -> KernelRecord:
+        """Get a record."""
         self.query("SELECT * FROM {table} WHERE {0}=?", **identifier)
         row = self.cursor.fetchone()
         if not row:
