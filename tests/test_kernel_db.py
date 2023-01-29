@@ -67,7 +67,7 @@ def test_list_kernelrecords(jp_environ):
     table.save(record1)
     table.save(record2)
     things = table.list()
-    assert len(things) == 2
+    assert len(things) == 2  # noqa
     assert isinstance(things[0], KernelRecord)
 
 
@@ -117,7 +117,7 @@ def test_list_custom_kernelrecord(jp_environ):
     table.save(record1)
     table.save(record2)
     things = table.list()
-    assert len(things) == 2
+    assert len(things) == 2  # noqa
     assert isinstance(things[0], CustomKernelRecord)
 
 

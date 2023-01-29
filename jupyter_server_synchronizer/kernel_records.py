@@ -102,11 +102,12 @@ class KernelRecord:
                     conflicts.append(field)
 
             if equivalence_found and conflicts:
-                raise KernelRecordConflict(
+                msg = (
                     "Two kernel records show some IDs are equivalent, "
                     "while others are not. Here is a list of conflicting "
                     f"IDs: {conflicts}"
                 )
+                raise KernelRecordConflict(msg)
 
             return equivalence_found
         return False
@@ -114,12 +115,12 @@ class KernelRecord:
     def update(self, other: "KernelRecord") -> None:
         """Updates in-place a kernel from other (only accepts positive updates"""
         if not isinstance(other, KernelRecord):
-            raise TypeError("'other' must be an instance of KernelRecord.")
+            msg = "'other' must be an instance of KernelRecord."
+            raise TypeError(msg)
 
         if other.kernel_id and self.kernel_id and other.kernel_id != self.kernel_id:
-            raise KernelRecordConflict(
-                "Could not update the record from 'other' because the two records conflict."
-            )
+            msg = "Could not update the record from 'other' because the two records conflict."
+            raise KernelRecordConflict(msg)
 
         for field in fields(self):
             if hasattr(other, field.name) and getattr(other, field.name):
@@ -168,7 +169,8 @@ class KernelRecordList:
             for r in self._records:
                 if record == r:
                     return record
-        raise ValueError(f"{record} not found in KernelRecordList.")
+        msg = f"{record} not found in KernelRecordList."
+        raise ValueError(msg)
 
     def update(self, record: KernelRecord) -> None:
         """Update a record in-place or append it if not in the list."""
