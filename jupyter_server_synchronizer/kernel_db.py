@@ -36,15 +36,15 @@ class KernelTable(Configurable):
         if path.exists():
             # Verify that the database path is not a directory.
             if path.is_dir():
-                raise TraitError(
-                    "`database_filepath` expected a file path, but the given path is a directory."
-                )
+                msg = "`database_filepath` expected a file path, but the given path is a directory."
+                raise TraitError(msg)
             # Verify that database path is an SQLite 3 Database by checking its header.
             with open(value, "rb") as f:
                 header = f.read(100)
 
-            if not header.startswith(b"SQLite format 3") and not header == b"":
-                raise TraitError("The given file is not an SQLite database file.")
+            if not header.startswith(b"SQLite format 3") and header != b"":  # noqa
+                msg = "The given file is not an SQLite database file."
+                raise TraitError(msg)
         return value
 
     kernel_record_class = Type(KernelRecord, klass=KernelRecord)
@@ -94,10 +94,7 @@ class KernelTable(Configurable):
         fields = {k: v for k, v in record.get_active_fields().items() if k in self._table_columns}
         columns = ",".join(fields.keys())
         values_tuple = tuple(fields.values())
-        if len(values_tuple) > 1:
-            values = str(values_tuple)
-        else:
-            values = f"('{values_tuple[0]}')"
+        values = str(values_tuple) if len(values_tuple) > 1 else f"('{values_tuple[0]}')"
         self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")
 
     def exists(self, **identifier: Any) -> bool:
@@ -121,11 +118,12 @@ class KernelTable(Configurable):
                 break
 
         if not found:
-            raise Exception(
+            msg = (
                 "No KernelRecord found in the KernelTable. "
                 "If this is a new record, use the `.save` method to store "
                 "the KernelRecord."
             )
+            raise Exception(msg)
 
         # Build the query for updating columns.
         fields = {k: v for k, v in record.get_active_fields().items() if k in self._table_columns}
@@ -156,5 +154,6 @@ class KernelTable(Configurable):
         self.query("SELECT * FROM {table} WHERE {0}=?", **identifier)
         row = self.cursor.fetchone()
         if not row:
-            raise Exception("No match was found in database.")
+            msg = "No match was found in database."
+            raise Exception(msg)
         return self.row_to_record(row)

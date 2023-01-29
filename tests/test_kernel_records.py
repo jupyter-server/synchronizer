@@ -68,7 +68,7 @@ def test_kernel_record_list():
     r2 = KernelRecord(kernel_id="kernel2")
     records.update(r2)
     assert r2 in records
-    assert len(records) == 2
+    assert len(records) == 2  # noqa
 
     records.remove(r2)
     assert r2 not in records
@@ -174,7 +174,7 @@ def test_kernel_record_list_of_custom_records():
     r2 = CustomKernelRecord(kernel_id="kernel2")
     records.update(r2)
     assert r2 in records
-    assert len(records) == 2
+    assert len(records) == 2  # noqa
 
     records.remove(r2)
     assert r2 not in records
