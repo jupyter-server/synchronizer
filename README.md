@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/jupyter-server/synchronizer/actions/workflows/python-tests.yml/badge.svg?query=branch%3Amain++)](https://github.com/jupyter-server/synchronizer/actions/workflows/python-tests.yml/badge.svg?query=branch%3Amain++)
 [![codecov](https://codecov.io/gh/jupyter-server/synchronizer/branch/main/graph/badge.svg?token=9ZWRV75IV5)](https://codecov.io/gh/jupyter-server/synchronizer)
 
-A Jupyter Server Session Manager that rehydrates and persists kernels and sessions beyond the lifetime of a server.
+A Jupyter Server Session Manager that persists and rehydrates kernel sessions beyond the lifetime of a server.
 
 This is particularly useful for Jupyter Servers running remote kernels and contents.
 
