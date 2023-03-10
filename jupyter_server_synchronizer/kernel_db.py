@@ -95,13 +95,13 @@ class KernelTable(Configurable):
         columns = ",".join(fields.keys())
         values_tuple = tuple(fields.values())
         values = str(values_tuple) if len(values_tuple) > 1 else f"('{values_tuple[0]}')"
-        self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")
+        self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")  # noqa
 
     def exists(self, **identifier: Any) -> bool:
         """Check to see if the session of a given name exists"""
         record = self.kernel_record_class(**identifier)
         self.cursor.execute(
-            f"SELECT * FROM {self._table_name} WHERE kernel_id='{record.kernel_id}'"
+            f"SELECT * FROM {self._table_name} WHERE kernel_id='{record.kernel_id}'"  # noqa
         )
         row = self.cursor.fetchone()
         if row is not None:
@@ -131,7 +131,7 @@ class KernelTable(Configurable):
         for key, value in fields.items():
             updates.append(f"{key}='{value}'")
         update_string = ", ".join(updates)
-        x = f"UPDATE {self._table_name} SET {update_string} WHERE {record_field}='{record_id}';"
+        x = f"UPDATE {self._table_name} SET {update_string} WHERE {record_field}='{record_id}';"  # noqa
         self.cursor.execute(x)
 
     def delete(self, **identifier: Any) -> None:
@@ -145,7 +145,7 @@ class KernelTable(Configurable):
 
     def list(self) -> List[KernelRecord]:  # noqa
         """List all records."""
-        self.cursor.execute(f"SELECT * FROM {self._table_name}")
+        self.cursor.execute(f"SELECT * FROM {self._table_name}")  # noqa
         rows = self.cursor.fetchall()
         return [self.row_to_record(row) for row in rows]
 
