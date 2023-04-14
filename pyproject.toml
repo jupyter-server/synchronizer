@@ -40,9 +40,7 @@ Tracker = "https://github.com/jupyter-server/synchronizer/issues"
 
 [project.optional-dependencies]
 test = [
-  "coverage",
   "pre-commit",
-  "pytest-cov",
   "pytest-timeout",
   "pytest-jupyter[server]>=0.4.1",
   "pytest>=7.0",
@@ -60,7 +58,7 @@ nowarn = "test -W default {args}"
 
 [tool.hatch.envs.cov]
 features = ["test"]
-dependencies = ["coverage", "pytest-cov"]
+dependencies = ["coverage[toml]", "pytest-cov"]
 [tool.hatch.envs.cov.scripts]
 test = "python -m pytest -vv --cov jupyter_server_synchronizer --cov-branch --cov-report term-missing:skip-covered {args}"
 nowarn = "test -W default {args}"
@@ -113,6 +111,10 @@ exclude_lines = [
   "class .*\bProtocol\\):",
 "@(abc\\.)?abstractmethod",
 ]
+
+[tool.coverage.run]
+relative_files = true
+source = ["jupyter_server_synchronizer"]
 
 [tool.mypy]
 check_untyped_defs = true
