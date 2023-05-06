@@ -44,7 +44,7 @@ def test_delete_kernelrecord(jp_environ):
     assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
 
     table.delete(kernel_id=kernel_id)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa
         found_record = table.get(kernel_id=kernel_id)
 
 
@@ -94,7 +94,7 @@ def test_delete_custom_kernelrecord(jp_environ):
     assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
 
     table.delete(kernel_id=kernel_id)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa
         found_record = table.get(kernel_id=kernel_id)
 
 
