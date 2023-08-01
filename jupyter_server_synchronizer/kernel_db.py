@@ -15,7 +15,7 @@ class KernelTable(Configurable):
     _table_name = "kerneltable"
     _connection = None
     _cursor = None
-    _ignored_fields = {"alive", "managed", "recorded"}
+    _ignored_fields = {"alive", "managed", "recorded"}  # noqa
 
     database_filepath = Unicode(
         default_value=":memory:",
