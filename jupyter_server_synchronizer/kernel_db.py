@@ -1,7 +1,9 @@
 """Kernel database management."""
+from __future__ import annotations
+
 import pathlib
 import sqlite3
-from typing import Any, List
+from typing import Any
 
 from traitlets import TraitError, Type, Unicode, validate
 from traitlets.config.configurable import Configurable
@@ -17,7 +19,7 @@ class KernelTable(Configurable):
     _cursor = None
     _ignored_fields = {"alive", "managed", "recorded"}  # noqa
 
-    database_filepath = Unicode(
+    database_filepath: str = Unicode(  # type:ignore[no-untyped-call]
         default_value=":memory:",
         help=(
             "The filesystem path to SQLite Database file "
@@ -27,8 +29,8 @@ class KernelTable(Configurable):
         ),
     ).tag(config=True)
 
-    @validate("database_filepath")
-    def _validate_database_filepath(self, proposal):
+    @validate("database_filepath")  # type:ignore[misc]
+    def _validate_database_filepath(self, proposal: dict[str, str]) -> str:
         value = proposal["value"]
         if value == ":memory:":
             return value
@@ -47,10 +49,10 @@ class KernelTable(Configurable):
                 raise TraitError(msg)
         return value
 
-    kernel_record_class = Type(KernelRecord, klass=KernelRecord)
+    kernel_record_class = Type(KernelRecord, klass=KernelRecord)  # type:ignore[no-untyped-call]
 
     @property
-    def cursor(self):
+    def cursor(self) -> sqlite3.Cursor:
         """Start a cursor and create a database called 'session'"""
         if self._cursor is None:
             self._cursor = self.connection.cursor()
@@ -61,7 +63,7 @@ class KernelTable(Configurable):
         return self._cursor
 
     @property
-    def connection(self):
+    def connection(self) -> sqlite3.Connection:
         """Start a database connection"""
         if self._connection is None:
             self._connection = sqlite3.connect(self.database_filepath, isolation_level=None)
@@ -69,7 +71,7 @@ class KernelTable(Configurable):
         return self._connection
 
     @property
-    def _table_columns(self):
+    def _table_columns(self) -> set[str]:
         return set(self.kernel_record_class.fields()).difference(self._ignored_fields)
 
     def query(self, query_string: str, **identifiers: Any) -> None:
@@ -143,7 +145,7 @@ class KernelTable(Configurable):
         items = {field: row[field] for field in self._table_columns}
         return self.kernel_record_class(**items)  # type:ignore[no-any-return]
 
-    def list(self) -> List[KernelRecord]:  # noqa
+    def list(self) -> list[KernelRecord]:  # noqa
         """List all records."""
         self.cursor.execute(f"SELECT * FROM {self._table_name}")  # noqa
         rows = self.cursor.fetchall()

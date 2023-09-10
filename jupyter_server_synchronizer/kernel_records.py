@@ -1,6 +1,7 @@
 """Kernel records management."""
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
-from typing import List, Union
 
 from jupyter_client.manager import KernelManager
 
@@ -25,19 +26,19 @@ class KernelRecord:
 
     # A Kernel record should have at least one field
     # that ends with `_id` in its keyname.
-    kernel_id: Union[None, str] = None
-    kernel_name: Union[None, str] = None
-    alive: Union[None, bool] = None
-    recorded: Union[None, bool] = None
-    managed: Union[None, bool] = None
+    kernel_id: None | str = None
+    kernel_name: None | str = None
+    alive: None | bool = None
+    recorded: None | bool = None
+    managed: None | bool = None
 
     @classmethod
-    def fields(cls):
+    def fields(cls) -> list[str]:
         """Get the fields."""
         return [f.name for f in fields(cls)]
 
     @classmethod
-    def from_manager(cls, manager: KernelManager) -> "KernelRecord":
+    def from_manager(cls, manager: KernelManager) -> KernelRecord:
         """Create a kernel from a KernelManager."""
         record = cls()
         # Look for the record fields as attributes the kernel manager
@@ -49,34 +50,34 @@ class KernelRecord:
         return record
 
     @classmethod
-    def get_identifier_fields(cls):
+    def get_identifier_fields(cls) -> list[str]:
         """The identifier keys/labels for a KernelRecord."""
-        identifier_fields = []
+        identifier_fields: list[str] = []
         for field in fields(cls):
             if field.name.endswith("_id"):
                 identifier_fields.append(field.name)
         return identifier_fields
 
-    def get_identifier_values(self):
+    def get_identifier_values(self) -> list[str | None]:
         """The values of all identifiers."""
-        identifier_values = []
+        identifier_values: list[str | None] = []
         for id_ in self.get_identifier_fields():
             if id_.endswith("_id"):
                 identifier_values.append(getattr(self, id_))
         return identifier_values
 
-    def get_active_identifiers(self):
+    def get_active_identifiers(self) -> dict[str, str]:
         """Return a dictionary of all identifiers that are not None."""
-        identifiers = {}
+        identifiers: dict[str, str] = {}
         for id_ in self.get_identifier_fields():
             val = getattr(self, id_)
             if val is not None:
                 identifiers[id_] = val
         return identifiers
 
-    def get_active_fields(self):
+    def get_active_fields(self) -> dict[str, str]:
         """Get a list of all fields that are not None"""
-        items = {}
+        items: dict[str, str] = {}
         for field in fields(self):
             value = getattr(self, field.name)
             if value:
@@ -112,7 +113,7 @@ class KernelRecord:
             return equivalence_found
         return False
 
-    def update(self, other: "KernelRecord") -> None:
+    def update(self, other: object) -> None:
         """Updates in-place a kernel from other (only accepts positive updates"""
         if not isinstance(other, KernelRecord):
             msg = "'other' must be an instance of KernelRecord."
@@ -134,17 +135,17 @@ class KernelRecordList:
     the new information.
     """
 
-    def __init__(self, *records):
+    def __init__(self, *records: KernelRecord) -> None:
         """Initialize the record list."""
-        self._records: List[KernelRecord] = []
+        self._records: list[KernelRecord] = []
         for record in records:
             self.update(record)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Str repr of the record list."""
         return str(self._records)
 
-    def __contains__(self, record: Union[KernelRecord, str]) -> bool:
+    def __contains__(self, record: KernelRecord | str) -> bool:
         """Search for records by kernel_id and session_id"""
         if isinstance(record, KernelRecord) and record in self._records:
             return True
@@ -155,11 +156,11 @@ class KernelRecordList:
                     return True
         return False
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Length of the record list."""
         return len(self._records)
 
-    def get(self, record: Union[KernelRecord, str]) -> KernelRecord:
+    def get(self, record: KernelRecord | str) -> KernelRecord:
         """get a record."""
         if isinstance(record, str):
             for r in self._records:
