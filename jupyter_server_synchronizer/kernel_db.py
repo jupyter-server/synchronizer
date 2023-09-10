@@ -1,4 +1,4 @@
-"""Kernel database managment."""
+"""Kernel database management."""
 import pathlib
 import sqlite3
 from typing import Any, List
