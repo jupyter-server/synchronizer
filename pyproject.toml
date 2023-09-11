@@ -99,7 +99,8 @@ addopts = [
 testpaths = ["tests"]
 filterwarnings= [
   # Fail on warnings
-  "error"
+  "error",
+  "module:datetime.datetime.utc:DeprecationWarning",
 ]
 
 [tool.coverage.report]
