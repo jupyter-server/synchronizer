@@ -101,6 +101,8 @@ filterwarnings= [
   # Fail on warnings
   "error",
   "module:datetime.datetime.utc:DeprecationWarning",
+  # pyyaml on pypi
+  "module:can't resolve package from __spec__:ImportWarning",
 ]
 
 [tool.coverage.report]

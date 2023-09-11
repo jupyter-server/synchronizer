@@ -33,11 +33,7 @@ jobs:
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
       - name: Run the tests
-        if: ${{!startsWith(matrix.python-version, 'pypy')}}
-        run: hatch run cov:test
-      - name: Run the tests on pypy
-        if: ${{startsWith(matrix.python-version, 'pypy')}}
-        run: hatch run test:test
+        run: hatch run cov:testt
       - uses: jupyterlab/maintainer-tools/.github/actions/upload-coverage@v1
 
   coverage:
