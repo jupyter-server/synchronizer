@@ -1,4 +1,6 @@
 """Gateway utils."""
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from jupyter_server.gateway.gateway_client import gateway_request
