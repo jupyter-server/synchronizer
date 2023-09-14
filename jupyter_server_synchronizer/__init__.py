@@ -1,2 +1,4 @@
-from ._version import __version__  # noqa
-from .manager import SynchronizerSessionManager  # noqa
+from ._version import __version__
+from .manager import SynchronizerSessionManager
+
+__all__ = ["__version__", "SynchronizerSessionManager"]

@@ -1,9 +1,16 @@
 """Gateway utils."""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from jupyter_server.gateway.gateway_client import gateway_request
 from tornado.escape import json_decode
 
+if TYPE_CHECKING:
+    from jupyter_server_synchronizer import SynchronizerSessionManager
 
-async def fetch_gateway_kernels(synchronizer):
+
+async def fetch_gateway_kernels(synchronizer: SynchronizerSessionManager) -> None:
     """Fetch running kernels from a Kernel/Enterprise Gateway."""
     mkm = synchronizer.kernel_manager
     response = await gateway_request(mkm.kernels_url, method="GET")

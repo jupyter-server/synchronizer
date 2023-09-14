@@ -1,5 +1,8 @@
 """A Jupyter Server Session Manager that rehydrates sessions/kernels on server restart."""
+from __future__ import annotations
+
 import asyncio
+import typing as t
 import uuid
 
 from jupyter_server.services.sessions.sessionmanager import KernelSessionRecordList, SessionManager
@@ -10,16 +13,18 @@ from .kernel_db import KernelTable
 from .kernel_records import KernelRecord, KernelRecordList
 from .traits import Awaitable
 
+# mypy: disable-error-code="no-untyped-call"
+
 
 class SynchronizerSessionManager(SessionManager):
     """A Jupyter Server Session Manager that rehydrates sessions/kernels on server restart."""
 
-    sync_before_server = Bool(
+    sync_before_server: bool = Bool(
         default_value=False,
         help="Run the synchronizer once before the underlying Jupyter Server starts?",
     ).tag(config=True)
 
-    autosync = Bool(
+    autosync: bool = Bool(
         default_value=False,
         help="If True, the extension will periodically synchronize the server automatically.",
     ).tag(config=True)
@@ -36,7 +41,7 @@ class SynchronizerSessionManager(SessionManager):
     kernel_table_class = Type(default_value=KernelTable, klass=KernelTable)
     kernel_table = Instance(klass=KernelTable)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         """Initialize the manager."""
         super().__init__(*args, **kwargs)
         self._pending_sessions = KernelSessionRecordList()
@@ -45,8 +50,8 @@ class SynchronizerSessionManager(SessionManager):
             kernel_record_class=self.kernel_record_class,
         )
 
-    @default("kernel_table")
-    def _default_kernel_remote_table(self):  # pragma: no cover
+    @default("kernel_table")  # type:ignore[misc]
+    def _default_kernel_remote_table(self) -> KernelTable:  # pragma: no cover
         return KernelTable()
 
     fetch_running_kernels = Awaitable(
@@ -57,8 +62,8 @@ class SynchronizerSessionManager(SessionManager):
         )
     ).tag(config=True)
 
-    @default("fetch_running_kernels")
-    def _default_fetch_running_kernels(self):
+    @default("fetch_running_kernels")  # type:ignore[misc]
+    def _default_fetch_running_kernels(self) -> t.Callable[..., t.Any]:
         return fetch_gateway_kernels
 
     def fetch_recorded_kernels(self) -> None:
@@ -75,7 +80,7 @@ class SynchronizerSessionManager(SessionManager):
             record = self.kernel_record_class.from_manager(km)
             self._kernel_records.update(record)
 
-    async def fetch_kernel_records(self):
+    async def fetch_kernel_records(self) -> None:
         """Fetch all the information that can be found about
         kernels started by this server.
         """
@@ -85,7 +90,7 @@ class SynchronizerSessionManager(SessionManager):
         # Log all kernel records seen at this stage
         self.log.debug(str(self._kernel_records))
 
-    def record_kernels(self):
+    def record_kernels(self) -> None:
         """Record the current kernels to the kernel database."""
         for kernel in self._kernel_records._records:
             conditions = [
@@ -104,7 +109,7 @@ class SynchronizerSessionManager(SessionManager):
                     self.log.error(f"Could not record kernel. {kernel}")
                     self.log.error(e)
 
-    def remove_stale_kernels(self):
+    def remove_stale_kernels(self) -> None:
         """Remove kernels from the database that are no longer running."""
         for k in self._kernel_records._records:
             if not k.alive:
@@ -116,7 +121,7 @@ class SynchronizerSessionManager(SessionManager):
                     self.log.error(f"Could not remove kernel from records: {k}")
                     self.log.error(e)
 
-    async def hydrate_kernel_managers(self):
+    async def hydrate_kernel_managers(self) -> None:
         """Create KernelManagers for kernels found for this
         server but are not yet managed.
         """
@@ -133,7 +138,7 @@ class SynchronizerSessionManager(SessionManager):
                     self.log.error(f"Could not hydrate a manager for kernel: {k}")
                     self.log.error(e)
 
-    async def delete_stale_sessions(self):
+    async def delete_stale_sessions(self) -> None:
         """Delete sessions that either have no kernel or no content
         found in the server.
         """
@@ -167,7 +172,7 @@ class SynchronizerSessionManager(SessionManager):
             #     )
             #     await self.delete_session(session_id)
 
-    async def shutdown_kernels_without_sessions(self):
+    async def shutdown_kernels_without_sessions(self) -> None:
         """Shutdown 'unknown' kernels (found in kernelmanager but
         not the session manager).
         """
@@ -189,7 +194,7 @@ class SynchronizerSessionManager(SessionManager):
                     self.log.info(err2)
                     pass
 
-    async def sync_kernels(self):
+    async def sync_kernels(self) -> None:
         """Synchronize the kernel manager, kernel database, and
         remote kernel service.
         """
@@ -200,7 +205,7 @@ class SynchronizerSessionManager(SessionManager):
         await self.hydrate_kernel_managers()
         self.record_kernels()
 
-    async def sync_sessions(self):
+    async def sync_sessions(self) -> None:
         """Synchronize the session database and with the
         multi-kernel_manager by:
 
@@ -214,7 +219,7 @@ class SynchronizerSessionManager(SessionManager):
         await self.delete_stale_sessions()
         await self.shutdown_kernels_without_sessions()
 
-    async def sync_managers(self):
+    async def sync_managers(self) -> None:
         """Rehydrate sessions and kernels managers from the remote
         kernel service.
         """
@@ -223,7 +228,7 @@ class SynchronizerSessionManager(SessionManager):
         self.log.debug("Synchronizing kernel sessions.")
         await self.sync_sessions()
 
-    async def list_sessions(self):
+    async def list_sessions(self) -> list[dict[str, t.Any]]:
         """List the sessions."""
         # Run the synchronizer loop
         try:
@@ -231,9 +236,9 @@ class SynchronizerSessionManager(SessionManager):
         except Exception as e:
             self.log.error(e)
         out = await super().list_sessions()
-        return out
+        return t.cast(t.List[t.Dict[str, t.Any]], out)
 
-    async def _regular_syncing(self, interval=5.0):
+    async def _regular_syncing(self, interval: float = 5.0) -> None:
         """Start regular syncing on a defined interval."""
         while True:
             self.log.info("Synchonizer is starting another loop.")
@@ -246,6 +251,6 @@ class SynchronizerSessionManager(SessionManager):
                     self.log.exception(err)
             await asyncio.sleep(interval)
 
-    def start_regular_syncing(self):
+    def start_regular_syncing(self) -> asyncio.Future[t.Any]:
         """Run regular syncing in a background task."""
         return asyncio.ensure_future(self._regular_syncing(interval=self.syncing_interval))

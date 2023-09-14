@@ -19,10 +19,6 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
 ]
 requires-python = ">=3.8"
 dependencies = ["jupyter_server>=1.21.0"]
@@ -65,9 +61,9 @@ nowarn = "test -W default {args}"
 
 [tool.hatch.envs.typing]
 features = ["test"]
-dependencies = ["mypy>=0.990"]
+dependencies = ["mypy>=1.5.1"]
 [tool.hatch.envs.typing.scripts]
-test = "mypy --install-types --non-interactive {args:jupyter_server_synchronizer tests}"
+test = "mypy --install-types --non-interactive {args}"
 
 [tool.hatch.envs.lint]
 dependencies = [
@@ -93,9 +89,20 @@ fmt = [
 post-version-spec = "dev"
 
 [tool.pytest.ini_options]
-addopts = "-raXs --durations 10 --color=yes --doctest-modules"
-testpaths = [
-    "tests/"
+minversion = "6.0"
+xfail_strict = true
+log_cli_level = "info"
+addopts = [
+  "-raXs", "--durations=10", "--color=yes", "--doctest-modules",
+   "--showlocals", "--strict-markers", "--strict-config"
+]
+testpaths = ["tests"]
+filterwarnings= [
+  # Fail on warnings
+  "error",
+  "module:datetime.datetime.utc:DeprecationWarning",
+  # pyyaml on pypi
+  "module:can't resolve package from __spec__:ImportWarning",
 ]
 
 [tool.coverage.report]
@@ -117,21 +124,12 @@ relative_files = true
 source = ["jupyter_server_synchronizer"]
 
 [tool.mypy]
-check_untyped_defs = true
-disallow_any_generics = true
-disallow_incomplete_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-no_implicit_reexport = true
-pretty = true
-show_error_context = true
+files = "jupyter_server_synchronizer"
+python_version = "3.8"
+strict = true
 show_error_codes = true
-strict_equality = true
-strict_optional = true
-warn_unused_configs = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unused_ignores = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
 
 [tool.black]
 line-length = 100
@@ -170,3 +168,6 @@ ignore-nested-functions=true
 ignore-nested-classes=true
 fail-under=100
 exclude = ["tests"]
+
+[tool.repo-review]
+ignore = ["PY004", "PY007","PP301", "PP308", "GH102", "PC140", "RTD100"]
