@@ -241,12 +241,12 @@ class SynchronizerSessionManager(SessionManager):
     async def _regular_syncing(self, interval: float = 5.0) -> None:
         """Start regular syncing on a defined interval."""
         while True:
-            self.log.info("Synchonizer is starting another loop.")
-            # Try to synchonizer. If failed, log the exception.
+            self.log.info("Synchronizer is starting another loop.")
+            # Try to synchronizer. If failed, log the exception.
             try:
                 await self.sync_managers()
             except Exception as err:
-                self.log.error(f"Synchonizer failed: {err}")
+                self.log.error(f"Synchronizer failed: {err}")
                 if self.log.isEnabledFor(10):
                     self.log.exception(err)
             await asyncio.sleep(interval)
