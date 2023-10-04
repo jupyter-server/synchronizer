@@ -72,9 +72,9 @@ class KernelTable(Configurable):
 
     @property
     def _table_columns(self) -> set[str]:
-        return set(self.kernel_record_class.fields()).difference(
+        return set(self.kernel_record_class.fields()).difference(  # type:ignore[attr-defined]
             self._ignored_fields
-        )  # type:ignore[attr-defined]
+        )
 
     def query(self, query_string: str, **identifiers: Any) -> None:
         """Build and execute a query."""
@@ -88,8 +88,8 @@ class KernelTable(Configurable):
             err_message = "A valid identifying field for a Kernel Record was not given."
             identifiers_list = [
                 field
-                for field in self.kernel_record_class
-                if field.endswith("_id")  # type:ignore[attr-defined]
+                for field in self.kernel_record_class  # type:ignore[attr-defined]
+                if field.endswith("_id")
             ]
             if identifiers_list:
                 err_message += f" Examples include: {identifiers_list}"
