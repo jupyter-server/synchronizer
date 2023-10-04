@@ -5,7 +5,7 @@ from typing import Any
 from traitlets import TraitType
 
 
-class Awaitable(TraitType):
+class Awaitable(TraitType[Any, Any]):
     """An awaitable object trait."""
 
     info_text = "an awaitable"

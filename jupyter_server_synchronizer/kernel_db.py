@@ -19,7 +19,7 @@ class KernelTable(Configurable):
     _cursor = None
     _ignored_fields = {"alive", "managed", "recorded"}  # noqa
 
-    database_filepath: str = Unicode(  # type:ignore[no-untyped-call]
+    database_filepath = Unicode(
         default_value=":memory:",
         help=(
             "The filesystem path to SQLite Database file "
@@ -29,7 +29,7 @@ class KernelTable(Configurable):
         ),
     ).tag(config=True)
 
-    @validate("database_filepath")  # type:ignore[misc]
+    @validate("database_filepath")
     def _validate_database_filepath(self, proposal: dict[str, str]) -> str:
         value = proposal["value"]
         if value == ":memory:":
@@ -49,7 +49,7 @@ class KernelTable(Configurable):
                 raise TraitError(msg)
         return value
 
-    kernel_record_class = Type(KernelRecord, klass=KernelRecord)  # type:ignore[no-untyped-call]
+    kernel_record_class = Type(KernelRecord, klass=KernelRecord)
 
     @property
     def cursor(self) -> sqlite3.Cursor:
@@ -72,7 +72,9 @@ class KernelTable(Configurable):
 
     @property
     def _table_columns(self) -> set[str]:
-        return set(self.kernel_record_class.fields()).difference(self._ignored_fields)
+        return set(self.kernel_record_class.fields()).difference(
+            self._ignored_fields
+        )  # type:ignore[attr-defined]
 
     def query(self, query_string: str, **identifiers: Any) -> None:
         """Build and execute a query."""
@@ -85,7 +87,9 @@ class KernelTable(Configurable):
         else:
             err_message = "A valid identifying field for a Kernel Record was not given."
             identifiers_list = [
-                field for field in self.kernel_record_class if field.endswith("_id")
+                field
+                for field in self.kernel_record_class
+                if field.endswith("_id")  # type:ignore[attr-defined]
             ]
             if identifiers_list:
                 err_message += f" Examples include: {identifiers_list}"
@@ -101,7 +105,7 @@ class KernelTable(Configurable):
 
     def exists(self, **identifier: Any) -> bool:
         """Check to see if the session of a given name exists"""
-        record = self.kernel_record_class(**identifier)
+        record = self.kernel_record_class(**identifier)  # type:ignore[operator]
         self.cursor.execute(
             f"SELECT * FROM {self._table_name} WHERE kernel_id='{record.kernel_id}'"  # noqa
         )
@@ -143,7 +147,7 @@ class KernelTable(Configurable):
     def row_to_record(self, row: sqlite3.Row) -> KernelRecord:
         """Convert a row to a record."""
         items = {field: row[field] for field in self._table_columns}
-        return self.kernel_record_class(**items)  # type:ignore[no-any-return]
+        return self.kernel_record_class(**items)  # type:ignore[no-any-return,operator]
 
     def list(self) -> list[KernelRecord]:  # noqa
         """List all records."""
