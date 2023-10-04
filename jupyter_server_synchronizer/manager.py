@@ -19,12 +19,12 @@ from .traits import Awaitable
 class SynchronizerSessionManager(SessionManager):
     """A Jupyter Server Session Manager that rehydrates sessions/kernels on server restart."""
 
-    sync_before_server: bool = Bool(
+    sync_before_server = Bool(
         default_value=False,
         help="Run the synchronizer once before the underlying Jupyter Server starts?",
     ).tag(config=True)
 
-    autosync: bool = Bool(
+    autosync = Bool(
         default_value=False,
         help="If True, the extension will periodically synchronize the server automatically.",
     ).tag(config=True)
@@ -45,12 +45,12 @@ class SynchronizerSessionManager(SessionManager):
         """Initialize the manager."""
         super().__init__(*args, **kwargs)
         self._pending_sessions = KernelSessionRecordList()
-        self.kernel_table = self.kernel_table_class(
+        self.kernel_table = self.kernel_table_class(  # type:ignore[operator]
             database_filepath=self.database_filepath,
             kernel_record_class=self.kernel_record_class,
         )
 
-    @default("kernel_table")  # type:ignore[misc]
+    @default("kernel_table")
     def _default_kernel_remote_table(self) -> KernelTable:  # pragma: no cover
         return KernelTable()
 
@@ -62,7 +62,7 @@ class SynchronizerSessionManager(SessionManager):
         )
     ).tag(config=True)
 
-    @default("fetch_running_kernels")  # type:ignore[misc]
+    @default("fetch_running_kernels")
     def _default_fetch_running_kernels(self) -> t.Callable[..., t.Any]:
         return fetch_gateway_kernels
 
@@ -77,7 +77,7 @@ class SynchronizerSessionManager(SessionManager):
         KernelManagers) in the MultiKernelManager.
         """
         for km in self.kernel_manager._kernels.values():
-            record = self.kernel_record_class.from_manager(km)
+            record = self.kernel_record_class.from_manager(km)  # type:ignore[attr-defined]
             self._kernel_records.update(record)
 
     async def fetch_kernel_records(self) -> None:
