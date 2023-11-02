@@ -13,5 +13,5 @@ class Awaitable(TraitType[Any, Any]):
     def validate(self, obj: Any, value: Any) -> Any:
         """Validate the object"""
         if not inspect.iscoroutinefunction(value) and not inspect.isawaitable(value):
-            raise self.error(obj, value)  # type:ignore[no-untyped-call]
+            raise self.error(obj, value)
         return value
