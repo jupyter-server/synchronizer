@@ -72,9 +72,7 @@ class KernelTable(Configurable):
 
     @property
     def _table_columns(self) -> set[str]:
-        return set(self.kernel_record_class.fields()).difference(  # type:ignore[attr-defined]
-            self._ignored_fields
-        )
+        return set(self.kernel_record_class.fields()).difference(self._ignored_fields)
 
     def query(self, query_string: str, **identifiers: Any) -> None:
         """Build and execute a query."""
@@ -105,7 +103,7 @@ class KernelTable(Configurable):
 
     def exists(self, **identifier: Any) -> bool:
         """Check to see if the session of a given name exists"""
-        record = self.kernel_record_class(**identifier)  # type:ignore[operator]
+        record = self.kernel_record_class(**identifier)
         self.cursor.execute(
             f"SELECT * FROM {self._table_name} WHERE kernel_id='{record.kernel_id}'"  # noqa
         )
@@ -147,7 +145,7 @@ class KernelTable(Configurable):
     def row_to_record(self, row: sqlite3.Row) -> KernelRecord:
         """Convert a row to a record."""
         items = {field: row[field] for field in self._table_columns}
-        return self.kernel_record_class(**items)  # type:ignore[no-any-return,operator]
+        return self.kernel_record_class(**items)
 
     def list(self) -> list[KernelRecord]:  # noqa
         """List all records."""

@@ -16,7 +16,7 @@ from .traits import Awaitable
 # mypy: disable-error-code="no-untyped-call"
 
 
-class SynchronizerSessionManager(SessionManager):
+class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
     """A Jupyter Server Session Manager that rehydrates sessions/kernels on server restart."""
 
     sync_before_server = Bool(
@@ -45,7 +45,7 @@ class SynchronizerSessionManager(SessionManager):
         """Initialize the manager."""
         super().__init__(*args, **kwargs)
         self._pending_sessions = KernelSessionRecordList()
-        self.kernel_table = self.kernel_table_class(  # type:ignore[operator]
+        self.kernel_table = self.kernel_table_class(
             database_filepath=self.database_filepath,
             kernel_record_class=self.kernel_record_class,
         )
@@ -77,7 +77,7 @@ class SynchronizerSessionManager(SessionManager):
         KernelManagers) in the MultiKernelManager.
         """
         for km in self.kernel_manager._kernels.values():
-            record = self.kernel_record_class.from_manager(km)  # type:ignore[attr-defined]
+            record = self.kernel_record_class.from_manager(km)
             self._kernel_records.update(record)
 
     async def fetch_kernel_records(self) -> None:
