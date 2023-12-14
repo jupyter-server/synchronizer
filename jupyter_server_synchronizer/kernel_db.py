@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import pathlib
 import sqlite3
+from pathlib import Path
 from typing import Any
 
 from traitlets import TraitError, Type, Unicode, validate
@@ -17,7 +18,7 @@ class KernelTable(Configurable):
     _table_name = "kerneltable"
     _connection = None
     _cursor = None
-    _ignored_fields = {"alive", "managed", "recorded"}  # noqa
+    _ignored_fields = {"alive", "managed", "recorded"}  # noqa: RUF012
 
     database_filepath = Unicode(
         default_value=":memory:",
@@ -41,7 +42,7 @@ class KernelTable(Configurable):
                 msg = "`database_filepath` expected a file path, but the given path is a directory."
                 raise TraitError(msg)
             # Verify that database path is an SQLite 3 Database by checking its header.
-            with open(value, "rb") as f:
+            with Path(value).open("rb") as f:
                 header = f.read(100)
 
             if not header.startswith(b"SQLite format 3") and header != b"":
@@ -99,13 +100,13 @@ class KernelTable(Configurable):
         columns = ",".join(fields.keys())
         values_tuple = tuple(fields.values())
         values = str(values_tuple) if len(values_tuple) > 1 else f"('{values_tuple[0]}')"
-        self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")  # noqa
+        self.cursor.execute(f"INSERT INTO {self._table_name} ({columns}) VALUES {values}")  # noqa: S608
 
     def exists(self, **identifier: Any) -> bool:
         """Check to see if the session of a given name exists"""
         record = self.kernel_record_class(**identifier)
         self.cursor.execute(
-            f"SELECT * FROM {self._table_name} WHERE kernel_id='{record.kernel_id}'"  # noqa
+            f"SELECT * FROM {self._table_name} WHERE kernel_id='{record.kernel_id}'"  # noqa: S608
         )
         row = self.cursor.fetchone()
         if row is not None:
@@ -135,7 +136,7 @@ class KernelTable(Configurable):
         for key, value in fields.items():
             updates.append(f"{key}='{value}'")
         update_string = ", ".join(updates)
-        x = f"UPDATE {self._table_name} SET {update_string} WHERE {record_field}='{record_id}';"  # noqa
+        x = f"UPDATE {self._table_name} SET {update_string} WHERE {record_field}='{record_id}';"  # noqa: S608
         self.cursor.execute(x)
 
     def delete(self, **identifier: Any) -> None:
@@ -147,9 +148,9 @@ class KernelTable(Configurable):
         items = {field: row[field] for field in self._table_columns}
         return self.kernel_record_class(**items)
 
-    def list(self) -> list[KernelRecord]:  # noqa
+    def list(self) -> list[KernelRecord]:
         """List all records."""
-        self.cursor.execute(f"SELECT * FROM {self._table_name}")  # noqa
+        self.cursor.execute(f"SELECT * FROM {self._table_name}")  # noqa: S608
         rows = self.cursor.fetchall()
         return [self.row_to_record(row) for row in rows]
 

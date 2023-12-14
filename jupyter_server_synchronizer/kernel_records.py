@@ -6,12 +6,10 @@ from dataclasses import dataclass, fields
 from jupyter_client.manager import KernelManager
 
 
-class KernelRecordConflict(Exception):  # noqa
+class KernelRecordConflict(Exception):
     """An exception raised when trying to merge two
     kernels that have conflicting data.
     """
-
-    pass
 
 
 @dataclass
