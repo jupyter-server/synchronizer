@@ -31,8 +31,10 @@ def test_save_kernelrecord(jp_environ):
     record = KernelRecord(kernel_id=kernel_id, kernel_name="python3")
     table.save(record)
     found_record = table.get(kernel_id=kernel_id)
-    assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
-    assert hasattr(found_record, "kernel_name") and found_record.kernel_name == "python3"
+    assert hasattr(found_record, "kernel_id")
+    assert found_record.kernel_id == kernel_id
+    assert hasattr(found_record, "kernel_name")
+    assert found_record.kernel_name == "python3"
 
 
 def test_delete_kernelrecord(jp_environ):
@@ -41,10 +43,11 @@ def test_delete_kernelrecord(jp_environ):
     record = KernelRecord(kernel_id=kernel_id)
     table.save(record)
     found_record = table.get(kernel_id=kernel_id)
-    assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
+    assert hasattr(found_record, "kernel_id")
+    assert found_record.kernel_id == kernel_id
 
     table.delete(kernel_id=kernel_id)
-    with pytest.raises(Exception):  # noqa
+    with pytest.raises(Exception):  # noqa: B017
         found_record = table.get(kernel_id=kernel_id)
 
 
@@ -67,7 +70,7 @@ def test_list_kernelrecords(jp_environ):
     table.save(record1)
     table.save(record2)
     things = table.list()
-    assert len(things) == 2  # noqa
+    assert len(things) == 2
     assert isinstance(things[0], KernelRecord)
 
 
@@ -82,7 +85,8 @@ def test_save_custom_kernelrecord(jp_environ):
     record = CustomKernelRecord(kernel_id=kernel_id)
     table.save(record)
     found_record = table.get(kernel_id=kernel_id)
-    assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
+    assert hasattr(found_record, "kernel_id")
+    assert found_record.kernel_id == kernel_id
 
 
 def test_delete_custom_kernelrecord(jp_environ):
@@ -91,10 +95,11 @@ def test_delete_custom_kernelrecord(jp_environ):
     record = CustomKernelRecord(kernel_id=kernel_id)
     table.save(record)
     found_record = table.get(kernel_id=kernel_id)
-    assert hasattr(found_record, "kernel_id") and found_record.kernel_id == kernel_id
+    assert hasattr(found_record, "kernel_id")
+    assert found_record.kernel_id == kernel_id
 
     table.delete(kernel_id=kernel_id)
-    with pytest.raises(Exception):  # noqa
+    with pytest.raises(Exception):  # noqa: B017
         found_record = table.get(kernel_id=kernel_id)
 
 
@@ -117,7 +122,7 @@ def test_list_custom_kernelrecord(jp_environ):
     table.save(record1)
     table.save(record2)
     things = table.list()
-    assert len(things) == 2  # noqa
+    assert len(things) == 2
     assert isinstance(things[0], CustomKernelRecord)
 
 

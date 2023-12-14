@@ -106,7 +106,7 @@ class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
                     self.kernel_table.save(kernel)
                     kernel.recorded = True
                 except Exception as e:
-                    self.log.error(f"Could not record kernel. {kernel}")
+                    self.log.error("Could not record kernel. %s", kernel)
                     self.log.error(e)
 
     def remove_stale_kernels(self) -> None:
@@ -118,7 +118,7 @@ class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
                     if k.recorded:
                         self.kernel_table.delete(kernel_id=k.kernel_id)
                 except Exception as e:
-                    self.log.error(f"Could not remove kernel from records: {k}")
+                    self.log.error("Could not remove kernel from records: %s", k)
                     self.log.error(e)
 
     async def hydrate_kernel_managers(self) -> None:
@@ -135,7 +135,7 @@ class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
                     await self.kernel_manager.start_kernel(**kwargs)
                     k.managed = True
                 except Exception as e:
-                    self.log.error(f"Could not hydrate a manager for kernel: {k}")
+                    self.log.error("Could not hydrate a manager for kernel: %s", k)
                     self.log.error(e)
 
     async def delete_stale_sessions(self) -> None:
@@ -151,8 +151,9 @@ class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
             known_kids = list(mkm._kernels.keys()) + list(mkm._pending_kernels.keys())
             if kid not in known_kids:
                 self.log.debug(
-                    f"Kernel {kid} found in the session_manager but "
-                    f"not in the kernel_manager. Deleting this session."
+                    "Kernel %s found in the session_manager but "
+                    "not in the kernel_manager. Deleting this session.",
+                    kid,
                 )
                 # session = await self.get_session(kernel_id=kid)
                 self.cursor.execute("DELETE FROM session WHERE kernel_id=?", (kid,))
@@ -185,14 +186,14 @@ class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
                     if not kernel.ready.done() or kernel_id in self._pending_sessions:
                         continue
                     self.log.debug(
-                        f"Kernel {kernel_id} found in the kernel_manager is not "
-                        f"found in the session database. Shutting down the kernel."
+                        "Kernel %s found in the kernel_manager is not "
+                        "found in the session database. Shutting down the kernel.",
+                        kernel_id,
                     )
                     await self.kernel_manager.shutdown_kernel(kernel_id)
                 # Log any failures, but don't raise exceptions.
                 except Exception as err2:
                     self.log.info(err2)
-                    pass
 
     async def sync_kernels(self) -> None:
         """Synchronize the kernel manager, kernel database, and
@@ -246,7 +247,7 @@ class SynchronizerSessionManager(SessionManager):  # type:ignore[misc]
             try:
                 await self.sync_managers()
             except Exception as err:
-                self.log.error(f"Synchronizer failed: {err}")
+                self.log.error("Synchronizer failed: %s", err)
                 if self.log.isEnabledFor(10):
                     self.log.exception(err)
             await asyncio.sleep(interval)
