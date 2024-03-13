@@ -4,48 +4,6 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## 0.0.10
-
-([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.9...61c07f22e8792b283a91c0b82f0723d8f1002a6e))
-
-### Maintenance and upkeep improvements
-
-- Update Release Scripts [#91](https://github.com/jupyter-server/synchronizer/pull/91) ([@blink1073](https://github.com/blink1073))
-- chore: update pre-commit hooks [#90](https://github.com/jupyter-server/synchronizer/pull/90) ([@pre-commit-ci](https://github.com/pre-commit-ci))
-- chore: update pre-commit hooks [#89](https://github.com/jupyter-server/synchronizer/pull/89) ([@pre-commit-ci](https://github.com/pre-commit-ci))
-- Update ruff config [#88](https://github.com/jupyter-server/synchronizer/pull/88) ([@blink1073](https://github.com/blink1073))
-- chore: update pre-commit hooks [#87](https://github.com/jupyter-server/synchronizer/pull/87) ([@pre-commit-ci](https://github.com/pre-commit-ci))
-- chore: update pre-commit hooks [#86](https://github.com/jupyter-server/synchronizer/pull/86) ([@pre-commit-ci](https://github.com/pre-commit-ci))
-- Update typing for traitlets 5.13 [#85](https://github.com/jupyter-server/synchronizer/pull/85) ([@blink1073](https://github.com/blink1073))
-- Adopt ruff format [#84](https://github.com/jupyter-server/synchronizer/pull/84) ([@blink1073](https://github.com/blink1073))
-- Update typing for traitlets 5.11 [#83](https://github.com/jupyter-server/synchronizer/pull/83) ([@blink1073](https://github.com/blink1073))
-- chore: update pre-commit hooks [#82](https://github.com/jupyter-server/synchronizer/pull/82) ([@pre-commit-ci](https://github.com/pre-commit-ci))
-- Adopt sp repo review [#81](https://github.com/jupyter-server/synchronizer/pull/81) ([@blink1073](https://github.com/blink1073))
-- Bump actions/checkout from 3 to 4 [#79](https://github.com/jupyter-server/synchronizer/pull/79) ([@dependabot](https://github.com/dependabot))
-- Use local coverage [#75](https://github.com/jupyter-server/synchronizer/pull/75) ([@blink1073](https://github.com/blink1073))
-- Add more linting [#69](https://github.com/jupyter-server/synchronizer/pull/69) ([@blink1073](https://github.com/blink1073))
-- Add docstring enforcement [#67](https://github.com/jupyter-server/synchronizer/pull/67) ([@blink1073](https://github.com/blink1073))
-- Adopt ruff and address lint [#66](https://github.com/jupyter-server/synchronizer/pull/66) ([@blink1073](https://github.com/blink1073))
-- Fix test setup [#64](https://github.com/jupyter-server/synchronizer/pull/64) ([@blink1073](https://github.com/blink1073))
-- Clean up workflows and add badges [#62](https://github.com/jupyter-server/synchronizer/pull/62) ([@blink1073](https://github.com/blink1073))
-- CI Cleanup [#60](https://github.com/jupyter-server/synchronizer/pull/60) ([@blink1073](https://github.com/blink1073))
-- Bump actions/checkout from 2 to 3 [#58](https://github.com/jupyter-server/synchronizer/pull/58) ([@dependabot](https://github.com/dependabot))
-- Add dependabot [#57](https://github.com/jupyter-server/synchronizer/pull/57) ([@blink1073](https://github.com/blink1073))
-- Maintenance cleanup [#53](https://github.com/jupyter-server/synchronizer/pull/53) ([@blink1073](https://github.com/blink1073))
-- Maintenance Cleanup [#52](https://github.com/jupyter-server/synchronizer/pull/52) ([@blink1073](https://github.com/blink1073))
-
-### Documentation improvements
-
-- Update the tagline for this extension to clarify that it rehydrates kernel sessions. [#71](https://github.com/jupyter-server/synchronizer/pull/71) ([@Zsailer](https://github.com/Zsailer))
-
-### Contributors to this release
-
-([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-08-16&to=2024-03-13&type=c))
-
-[@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-08-16..2024-03-13&type=Issues) | [@codecov](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Acodecov+updated%3A2022-08-16..2024-03-13&type=Issues) | [@codecov-commenter](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Acodecov-commenter+updated%3A2022-08-16..2024-03-13&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Adependabot+updated%3A2022-08-16..2024-03-13&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-08-16..2024-03-13&type=Issues) | [@Zsailer](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3AZsailer+updated%3A2022-08-16..2024-03-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
-
 ## 0.0.9
 
 ([Full Changelog](https://github.com/jupyter-server/synchronizer/compare/v0.0.8...86ecf434d69d033f2682f5db4761f76938a9d7ca))
@@ -75,6 +33,8 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/jupyter-server/synchronizer/graphs/contributors?from=2022-05-10&to=2022-08-16&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Ablink1073+updated%3A2022-05-10..2022-08-16&type=Issues) | [@chiawchen](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Achiawchen+updated%3A2022-05-10..2022-08-16&type=Issues) | [@codecov-commenter](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Acodecov-commenter+updated%3A2022-05-10..2022-08-16&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Apre-commit-ci+updated%3A2022-05-10..2022-08-16&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyter-server%2Fsynchronizer+involves%3Awelcome+updated%3A2022-05-10..2022-08-16&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.8
 
